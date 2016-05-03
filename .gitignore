@@ -78,7 +78,6 @@ tags
 # sftp configuration file
 sftp-config.json
 
-
 ### Node ###
 # Logs
 logs
@@ -115,11 +114,10 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-
 ### Sass ###
 .sass-cache/
 *.css.map
 
-# hide the AWS and Rsync credentials file
-aws-credentials.json
-rsync-credentials.json
+### Composer ###
+composer.phar
+/vendor/
