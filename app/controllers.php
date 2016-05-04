@@ -42,7 +42,7 @@
 
       $title = $_GET['title'];
       $due_date = $_GET['due_date'];
-      $new_todo = Todo::create_todo($title,$due_date);
+      $new_todo = Todo::create_todo($title, $due_date);
       $todo = Todo::get_todo($new_todo);
 
       echo json_encode($todo);
@@ -82,6 +82,34 @@
       $id = $_GET['id'];
       $reset_todo = Todo::reset_todo($id);
       $todo = Todo::get_todo($reset_todo);
+
+      echo json_encode($todo);
+    }
+
+    // Setting a todo as overdue
+    public function overdue() {
+      if (!isset($_GET['id'])) {
+        return call('error');
+      }
+
+      $id = $_GET['id'];
+      $overdue_todo = Todo::overdue_todo($id);
+      $todo = Todo::get_todo($overdue_todo);
+
+      echo json_encode($todo);
+    }
+
+    // Edit an existing todo
+    public function edit() {
+      if (!isset($_GET['id']) || !isset($_GET['title']) || !isset($_GET['due_date'])) {
+        return call('error');
+      }
+
+      $id = $_GET['id'];
+      $title = $_GET['title'];
+      $due_date = $_GET['due_date'];
+      $edited_todo = Todo::edit_todo($id, $title, $due_date);
+      $todo = Todo::get_todo($edited_todo);
 
       echo json_encode($todo);
     }

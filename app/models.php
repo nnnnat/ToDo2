@@ -105,6 +105,29 @@
       return $id;
     }
 
+    // Setting a todo as overdue
+    public static function overdue_todo($id) {
+      $db = Database::getInstance();
+      $id = intval($id);
+      $vals = array('id'=>$id);
+      $request = $db->prepare('UPDATE todo SET overdue=1 WHERE id = :id');
+      $request->execute($vals);
+
+      return $id;
+    }
+
+    // Editing a todo
+    public static function edit_todo($id, $title, $due_date) {
+      $db = Database::getInstance();
+      $id = intval($id);
+      $due_date = strval($due_date); // need to reset to overdue always
+      $vals = array('id'=>$id, 'title'=>$title, 'due_date'=>$due_date);
+      $request = $db->prepare('UPDATE todo SET title=:title, due_date=:due_date  WHERE id = :id');
+      $request->execute($vals);
+
+      return $id;
+    }
+
   }
 
 ?>

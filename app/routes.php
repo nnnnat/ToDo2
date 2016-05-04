@@ -8,7 +8,7 @@
   }
 
   // controller actions
-  $controllers = array('todo' => ['completed', 'create', 'delete', 'done', 'get', 'index', 'overdue', 'reset', 'upcoming', 'update']);
+  $controllers = array('todo' => ['completed', 'create', 'delete', 'done', 'edit', 'get', 'index', 'overdue', 'reset', 'upcoming']);
 
   if (in_array($action, $controllers['todo'])) {
     call($action);
