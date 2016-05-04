@@ -1,0 +1,364 @@
+/*============================================================================================================================================================================================================================================
+Base Styles:
+============================================================================================================================================================================================================================================*/
+
+// --------------------------------------------------------------------------------------------------------------------
+// CSS Reset
+// --------------------------------------------------------------------------------------------------------------------
+/*
+  http://meyerweb.com/eric/tools/css/reset/
+  v2.0 | 20110126
+  License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+// HTML5 display-role reset for older browsers
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+// added this in cause I hate padding and margin
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End CSS Reset
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Fonts
+// --------------------------------------------------------------------------------------------------------------------
+
+// defult font style
+body {
+  color: $typeColor;
+  font-family: $type;
+  font-size: 100%;
+  font-weight: $copy;
+  line-height: $scale;
+
+  @include breakPoint(sm) {
+    font-size: 110%;
+  }
+
+  @include breakPoint(lg) {
+    font-size: 120%;
+  }
+}
+
+// headlines
+h1,h2,h3,h4 {
+
+}
+
+h1 {
+  font-size: ms(3);
+  font-weight: $headline;
+}
+
+h2 {
+  font-size: ms(2);
+  font-weight: $headline;
+}
+
+h3 {
+  font-size: ms(1);
+}
+
+// copy and list
+p,
+li {
+  font-size: ms(1);
+
+  b,
+  strong,
+  &.bold {
+    font-weight: $headline;
+  }
+
+  &.small {
+    font-size: ms(0);
+  }
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End Fonts
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Links
+// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
+// End Links
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Buttons
+// --------------------------------------------------------------------------------------------------------------------
+.button {
+  @include transition(background-color $macroTransition $macroEase, color $macroTransition $macroEase);
+  cursor: pointer;
+  font-size: ms(0);
+  font-weight: $headline;
+
+  @include breakPoint(sm) {
+    font-size: ms(-1);
+  }
+
+  .button-group & {
+    &:first-of-type {
+      margin: 0 ms(0) 0 0;
+    }
+  }
+
+  // button color styles
+  // primary button styles
+  &--primary {
+    background-color: $typeColor;
+    border: $lineWeight solid $typeColor;
+    color: $background;
+    padding: ms(0);
+
+    &:hover,
+    &:focus {
+      background-color: $highlight;
+    }
+
+    // inverted version of same color way
+    &.invert {
+      background-color: $typeColor;
+      border: $lineWeight solid $background;
+      color: $background;
+
+      &:hover,
+      &:focus {
+        background-color: $background;
+        color: $typeColor;
+      }
+    }
+  }
+
+  // secondary button styles looks like a link
+  &--secondary {
+    background-color: $background;
+    border: none;
+    border-bottom: $lineWeight solid $typeColor;
+    color: $typeColor;
+    margin-top: ms(0);
+    padding: 0;
+
+    &:hover,
+    &:focus {
+      background-color: $typeColor;
+      color: $background;
+    }
+  }
+  // button color styles
+
+  // large button for task primary actions
+  &--large {
+    border: none;
+    font-size: ms(0);
+    height: auto;
+    margin: 0;
+    width: 100%;
+  }
+  // button modifier
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End Buttons
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Form Fields
+// --------------------------------------------------------------------------------------------------------------------
+form {
+  max-width: 40em;
+  padding: ms(2);
+  width: 100%;
+}
+
+label,
+legend {
+  cursor: pointer;
+  display: block;
+  font-size: ms(2);
+  font-weight: $headline;
+  margin: 0 0 ms(-2);
+}
+
+input[type=text] {
+  appearance: none;
+  background-color: $background;
+  border: $lineWeight solid $background;
+  border-radius: 0;
+  color: $typeColor;
+  cursor: pointer;
+  font-size: ms(1);
+  margin: 0 0 ms(2);
+  padding: ms(-2);
+  width: 100%;
+
+  &.error {
+    border-color: $red;
+  }
+}
+
+select {
+  appearance: none;
+  background-color: $background;
+  border: $lineWeight solid $typeColor;
+  border-radius: 0;
+  cursor: pointer;
+  color: $typeColor;
+  display: block;
+  font-size: ms(0);
+  margin: 0;
+  padding: ms(-2);
+  width: 100%;
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End Form Fields
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Layout
+// --------------------------------------------------------------------------------------------------------------------
+// body
+body {
+  background-color: $background;
+  padding: 0 ms(0);
+
+  @include breakPoint(sm) {
+    padding: 0 10%;
+  }
+
+  @include breakPoint(xl) {
+    padding: 0 20%;
+  }
+
+  &.lock {
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+  }
+}
+
+// header
+header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: ms(4) 0 ms(2);
+
+  @include breakPoint(md) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  @include breakPoint(lg) {
+
+  }
+}
+
+// todo list
+.todo-list {
+  min-height: 100vh;
+  padding: ms(2) 0 0;
+}
+
+// footer
+footer {
+  padding: ms(2) 0 ms(4);
+}
+
+// new todo panel
+.todo-panel {
+  @include transition(transform $macroTransition $macroEase $microTransition, opacity $macroTransition $macroEase);
+  align-items: center;
+  background: $typeColor;
+  color: $background;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  transform: scale(0,0);
+  width: 100vw;
+
+  &.active {
+    @include transition(transform $macroTransition $macroEase, opacity $macroTransition $macroEase $microTransition);
+    opacity: 1;
+    transform: scale(1,1);
+  }
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End Layout
+// --------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------
+// Utility Classes & Helpers
+// --------------------------------------------------------------------------------------------------------------------
+// accessibility
+.screen-reader {
+  border: 0;
+  clip-path: rect(0,0,0,0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+::selection {
+  background: $dark; /* WebKit/Blink Browsers */
+  color: $white;
+}
+::-moz-selection {
+  background: $dark; /* Gecko Browsers */
+  color: $white;
+}
+// --------------------------------------------------------------------------------------------------------------------
+// End Utility Classes & Helpers
+// --------------------------------------------------------------------------------------------------------------------
