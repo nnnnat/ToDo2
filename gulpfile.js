@@ -83,7 +83,7 @@ gulp.task('styles', function () {
 // server
 gulp.task('browser-sync', function () {
     browserSync({
-        proxy: "localhost:8888/todo",
+        proxy: "localhost:8888/ToDo2",
         notify: false,
         logPrefix: 'BrowserSync'
     });
