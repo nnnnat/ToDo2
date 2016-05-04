@@ -6,7 +6,7 @@
 
   <title>ToDo2</title>
 
-  <link rel="stylesheet" href="<?php // echo STYLES; ?>">
+  <link rel="stylesheet" href="<?php echo STYLES; ?>">
 
   <!-- need to set these bad boys up later! -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="./apple-touch-icon-144-precomposed.png">
