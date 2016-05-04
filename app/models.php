@@ -120,9 +120,9 @@
     public static function edit_todo($id, $title, $due_date) {
       $db = Database::getInstance();
       $id = intval($id);
-      $due_date = strval($due_date); // need to reset to overdue always
-      $vals = array('id'=>$id, 'title'=>$title, 'due_date'=>$due_date);
-      $request = $db->prepare('UPDATE todo SET title=:title, due_date=:due_date  WHERE id = :id');
+      $due_date = strval($due_date);
+      $vals = array('id'=>$id, 'title'=>$title, 'due_date'=>$due_date, 'overdue'=>0 ); // I'm reseting all edited todos to be not overdue since I won't allow dates in the past to be used as a due date on the frontend
+      $request = $db->prepare('UPDATE todo SET title=:title, due_date=:due_date, overdue=:overdue  WHERE id = :id');
       $request->execute($vals);
 
       return $id;
