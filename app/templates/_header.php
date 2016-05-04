@@ -1,8 +1,8 @@
 <header>
   <div class="header-block">
-    <span class="header-block__logo">
+    <h1 class="header-block__logo">
       ToDo2
-    </span>
+    </h1>
   </div>
   <div class="header-block button-group">
     <button class="button button--primary js-new-todo">New ToDo</button>

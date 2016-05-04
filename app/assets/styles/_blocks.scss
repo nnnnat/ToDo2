@@ -99,6 +99,7 @@ Block Styles:
   height: auto;
   max-height: 0em;
   overflow: hidden;
+  visibility: hidden;
   width: 100%;
 
   &--urgent {
@@ -111,6 +112,7 @@ Block Styles:
 
   &.active {
     max-height: 5em;
+    visibility: visible;
   }
 
   p {
