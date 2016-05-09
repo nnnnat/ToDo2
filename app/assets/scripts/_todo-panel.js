@@ -5,18 +5,21 @@ function TodoPanel(app) {
   this.section = document.getElementsByClassName('todo-panel')[0];
   this.form = document.getElementById('todo-panel-form');
   this.titleInput = document.getElementById('todo-title');
+  this.dueDateGroup = document.getElementById('todo-due-date');
   this.dueMonthInput = document.getElementById('todo-due-month');
   this.dueDayInput = document.getElementById('todo-due-day');
   this.dueYearInput = document.getElementById('todo-due-year');
   this.addBTN = document.getElementsByClassName('js-submit')[0];
   this.cancelBTN = document.getElementsByClassName('js-cancel')[0];
-  this.errorMessage = this.section.querySelectorAll('.message')[0];
+  this.errorMessage = this.section.querySelectorAll('.message');
   this.isActive = false;
 }
 
 // init
 TodoPanel.prototype.init = function() {
   var panel = this;
+  var title = encodeURIComponent(panel.titleInput.value);
+  var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
   panel.addBTN.addEventListener('click', function (e) {
     e.preventDefault();
@@ -29,8 +32,31 @@ TodoPanel.prototype.init = function() {
   });
 
   panel.titleInput.addEventListener('blur', function (e) {
-    panel.titleInput.classList.remove('error');
-    panel.errorMessage.classList.remove('active');
+    if(panel.validateTitleInput(title) === true) {
+      panel.titleInput.classList.remove('error');
+      panel.errorMessage[0].classList.remove('active');
+    }
+  });
+
+  panel.dueMonthInput.addEventListener('blur', function (e) {
+    if(panel.validateDateInput(dueDate) === true) {
+      panel.dueDateGroup.classList.remove('error');
+      panel.errorMessage[1].classList.remove('active');
+    }
+  });
+
+  panel.dueDayInput.addEventListener('blur', function (e) {
+    if(panel.validateDateInput(dueDate) === true) {
+      panel.dueDateGroup.classList.remove('error');
+      panel.errorMessage[1].classList.remove('active');
+    }
+  });
+
+  panel.dueYearInput.addEventListener('blur', function (e) {
+    if(panel.validateDateInput(dueDate) === true) {
+      panel.dueDateGroup.classList.remove('error');
+      panel.errorMessage[1].classList.remove('active');
+    }
   });
 };
 
@@ -48,6 +74,8 @@ TodoPanel.prototype.open = function() {
 TodoPanel.prototype.close = function() {
   var panel = this;
   panel.section.classList.remove('active');
+  panel.section.setAttribute('aria-hidden', true);
+  panel.section.setAttribute('aria-expanded', false);
   panel.isActive = false;
   panel.form.reset();
   panel.setTodaysDate();
@@ -59,7 +87,7 @@ TodoPanel.prototype.newTodo = function() {
   var title = encodeURIComponent(panel.titleInput.value);
   var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
-  if(panel.validateTitleInput(title) === true) {
+  if(panel.validateTitleInput(title) === true && panel.validateDateInput(dueDate) === true) {
     var request = new XMLHttpRequest();
 
     request.open('GET', '?action=create&title='+title+'&due_date='+dueDate+'', true);
@@ -67,8 +95,6 @@ TodoPanel.prototype.newTodo = function() {
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         var data = JSON.parse(this.response);
-
-        console.log(panel.parent.todoData.lenght);
 
         // I think this was me trying to get the new todo added to the list after it is created. Needs Work
         if (panel.parent.todoData.length > 0) {
@@ -126,7 +152,10 @@ TodoPanel.prototype.setTodaysDate = function() {
 
   // clearing out any error messaging
   panel.titleInput.classList.remove('error');
-  panel.errorMessage.classList.remove('active');
+  panel.errorMessage[0].classList.remove('active');
+
+  panel.dueDateGroup.classList.remove('error');
+  panel.errorMessage[1].classList.remove('active');
 };
 
 TodoPanel.prototype.validateTitleInput = function(title) {
@@ -134,7 +163,7 @@ TodoPanel.prototype.validateTitleInput = function(title) {
 
   if(panel.titleInput.value === '') {
     panel.titleInput.classList.add('error');
-    panel.errorMessage.classList.add('active');
+    panel.errorMessage[0].classList.add('active');
     return false;
   }else {
     return true;
@@ -143,10 +172,12 @@ TodoPanel.prototype.validateTitleInput = function(title) {
 
 TodoPanel.prototype.validateDateInput = function(dueDate) {
   var panel = this;
+  var currentDate = new Date();
+  var dueDate = new Date(dueDate);
 
-  if(panel.titleInput.value === '') {
-    panel.titleInput.classList.add('error');
-    panel.errorMessage.classList.add('active');
+  if (currentDate.getTime() >= dueDate.getTime()) {
+    panel.dueDateGroup.classList.add('error');
+    panel.errorMessage[1].classList.add('active');
     return false;
   }else {
     return true;

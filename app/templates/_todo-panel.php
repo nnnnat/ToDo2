@@ -9,7 +9,7 @@
 
     <fieldset>
       <legend>Due Date:</legend>
-
+      <div class="message message--urgent"><p>Due dates must be in the future!</p></div>
       <div class="todo-panel-due-date" id="todo-due-date">
 
         <label for="todo-due-month">
@@ -46,8 +46,8 @@
             ?>
           </select>
         </label>
-
       </div>
+
     </fieldset>
 
     <div class="button-group todo-panel-block">

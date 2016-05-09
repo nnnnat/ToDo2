@@ -138,6 +138,10 @@ Block Styles:
   margin: 0 0 ms(4);
   width: 100%;
 
+  &.error {
+    background: $red;
+  }
+
   label {
     font-size: ms(1);
     position: relative;

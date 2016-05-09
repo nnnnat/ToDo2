@@ -6,8 +6,6 @@
 
       require_once TEMPLATES.'_header.php';
 
-      require_once APP.'routes.php';
-
       require_once TEMPLATES.'_todo-list.php';
 
       require_once TEMPLATES.'_footer.php';
