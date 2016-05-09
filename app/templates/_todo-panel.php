@@ -1,6 +1,6 @@
-<section class="todo-panel" aria-hidden>
+<section class="todo-panel" aria-hidden="true" >
 
-  <form class="todo-panel-form" id="todo-panel-form">
+  <form class="todo-panel-form" id="todo-panel-form" tabindex="-1" aria-label="Todo Form">
     <label for="todo-title">
       ToDo:
     </label>

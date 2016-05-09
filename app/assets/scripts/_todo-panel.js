@@ -1,3 +1,5 @@
+var Todo = require('./_todo.js');
+
 function TodoPanel(app) {
   this.parent = app;
   this.section = document.getElementsByClassName('todo-panel')[0];
@@ -38,7 +40,9 @@ TodoPanel.prototype.open = function() {
   panel.setTodaysDate();
   panel.section.classList.add('active');
   panel.isActive = true;
-  //panel.titleInput.focus();
+  panel.section.setAttribute('aria-hidden', false);
+  panel.section.setAttribute('aria-expanded', true);
+  panel.form.focus();
 };
 
 TodoPanel.prototype.close = function() {
@@ -55,7 +59,7 @@ TodoPanel.prototype.newTodo = function() {
   var title = encodeURIComponent(panel.titleInput.value);
   var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
-  if(panel.validateInput(title) === true) {
+  if(panel.validateTitleInput(title) === true) {
     var request = new XMLHttpRequest();
 
     request.open('GET', '?action=create&title='+title+'&due_date='+dueDate+'', true);
@@ -64,7 +68,7 @@ TodoPanel.prototype.newTodo = function() {
       if (this.status >= 200 && this.status < 400) {
         var data = JSON.parse(this.response);
 
-        console.log(panel.parent.todoData);
+        console.log(panel.parent.todoData.lenght);
 
         // I think this was me trying to get the new todo added to the list after it is created. Needs Work
         if (panel.parent.todoData.length > 0) {
@@ -72,9 +76,12 @@ TodoPanel.prototype.newTodo = function() {
           panel.parent.todoData.push(data);
           panel.parent.todoList.push(todo);
           todo.init();
+          panel.close();
           panel.parent.todoListDIV.insertBefore(todo.div, panel.parent.todoListDIV.firstChild);
           todo.in(panel.parent.animationDelay);
-          console.log('hey');
+
+        }else {
+          panel.close();
         }
 
       } else {
@@ -87,8 +94,6 @@ TodoPanel.prototype.newTodo = function() {
     };
 
     request.send();
-
-    panel.close();
   }
 };
 
@@ -99,11 +104,11 @@ TodoPanel.prototype.editTodo = function(todo) {
   var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
   panel.open();
-  console.log('made it');
+  console.log(todo);
 
-  if(panel.validateInput(title) === true) {
-    panel.close();
-  }
+  // if(panel.validateTitleInput(title) === true) {
+  //   panel.close();
+  // }
 };
 
 // helpers
@@ -124,7 +129,19 @@ TodoPanel.prototype.setTodaysDate = function() {
   panel.errorMessage.classList.remove('active');
 };
 
-TodoPanel.prototype.validateInput = function(title) {
+TodoPanel.prototype.validateTitleInput = function(title) {
+  var panel = this;
+
+  if(panel.titleInput.value === '') {
+    panel.titleInput.classList.add('error');
+    panel.errorMessage.classList.add('active');
+    return false;
+  }else {
+    return true;
+  }
+};
+
+TodoPanel.prototype.validateDateInput = function(dueDate) {
   var panel = this;
 
   if(panel.titleInput.value === '') {

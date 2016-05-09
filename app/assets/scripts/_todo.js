@@ -91,6 +91,7 @@ Todo.prototype.isOverdue = function() {
 
 };
 
+// this function send the request to the backend
 Todo.prototype.update = function(action) {
   var todo = this;
   var request = new XMLHttpRequest();
