@@ -18,8 +18,6 @@ function TodoPanel(app) {
 // init
 TodoPanel.prototype.init = function() {
   var panel = this;
-  var title = encodeURIComponent(panel.titleInput.value);
-  var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
   panel.addBTN.addEventListener('click', function (e) {
     e.preventDefault();
@@ -32,31 +30,19 @@ TodoPanel.prototype.init = function() {
   });
 
   panel.titleInput.addEventListener('blur', function (e) {
-    if(panel.validateTitleInput(title) === true) {
-      panel.titleInput.classList.remove('error');
-      panel.errorMessage[0].classList.remove('active');
-    }
+    panel.validateTitleInput()
   });
 
-  panel.dueMonthInput.addEventListener('blur', function (e) {
-    if(panel.validateDateInput(dueDate) === true) {
-      panel.dueDateGroup.classList.remove('error');
-      panel.errorMessage[1].classList.remove('active');
-    }
+  panel.dueMonthInput.addEventListener('change', function (e) {
+    panel.validateDateInput()
   });
 
-  panel.dueDayInput.addEventListener('blur', function (e) {
-    if(panel.validateDateInput(dueDate) === true) {
-      panel.dueDateGroup.classList.remove('error');
-      panel.errorMessage[1].classList.remove('active');
-    }
+  panel.dueDayInput.addEventListener('change', function (e) {
+    panel.validateDateInput()
   });
 
-  panel.dueYearInput.addEventListener('blur', function (e) {
-    if(panel.validateDateInput(dueDate) === true) {
-      panel.dueDateGroup.classList.remove('error');
-      panel.errorMessage[1].classList.remove('active');
-    }
+  panel.dueYearInput.addEventListener('change', function (e) {
+    panel.validateDateInput()
   });
 };
 
@@ -87,7 +73,7 @@ TodoPanel.prototype.newTodo = function() {
   var title = encodeURIComponent(panel.titleInput.value);
   var dueDate = String(panel.dueYearInput.value+'-'+panel.dueMonthInput.value+'-'+panel.dueDayInput.value);
 
-  if(panel.validateTitleInput(title) === true && panel.validateDateInput(dueDate) === true) {
+  if(panel.validateTitleInput() === true && panel.validateDateInput() === true) {
     var request = new XMLHttpRequest();
 
     request.open('GET', '?action=create&title='+title+'&due_date='+dueDate+'', true);
@@ -158,28 +144,36 @@ TodoPanel.prototype.setTodaysDate = function() {
   panel.errorMessage[1].classList.remove('active');
 };
 
-TodoPanel.prototype.validateTitleInput = function(title) {
+TodoPanel.prototype.validateTitleInput = function() {
   var panel = this;
+  var title = encodeURIComponent(panel.titleInput.value);
 
   if(panel.titleInput.value === '') {
     panel.titleInput.classList.add('error');
     panel.errorMessage[0].classList.add('active');
     return false;
   }else {
+    panel.titleInput.classList.remove('error');
+    panel.errorMessage[0].classList.remove('active');
     return true;
   }
 };
 
-TodoPanel.prototype.validateDateInput = function(dueDate) {
+TodoPanel.prototype.validateDateInput = function() {
   var panel = this;
+  var dueDate = String(panel.dueYearInput.value+'/'+panel.dueMonthInput.value+'/'+panel.dueDayInput.value);
   var currentDate = new Date();
   var dueDate = new Date(dueDate);
+  currentDate.setHours(0,0,0,0);
+  dueDate.setHours(0,0,0,0);
 
-  if (currentDate.getTime() >= dueDate.getTime()) {
+  if (currentDate.getTime() > dueDate.getTime()) {
     panel.dueDateGroup.classList.add('error');
     panel.errorMessage[1].classList.add('active');
     return false;
   }else {
+    panel.dueDateGroup.classList.remove('error');
+    panel.errorMessage[1].classList.remove('active');
     return true;
   }
 };

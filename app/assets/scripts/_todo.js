@@ -83,9 +83,12 @@ Todo.prototype.reset = function() {
 Todo.prototype.isOverdue = function() {
   var todo = this;
   var currentDate = new Date();
-  var dueDate = new Date(todo.dueDate);
+  var dueDate = todo.dueDate.replace(/-/g, '\/');
+  dueDate = new Date(dueDate);
+  currentDate.setHours(0,0,0,0);
+  dueDate.setHours(0,0,0,0);
 
-  if (currentDate.getTime() >= dueDate.getTime()) {
+  if (currentDate.getTime() > dueDate.getTime()) {
     todo.update('overdue');
   }
 
