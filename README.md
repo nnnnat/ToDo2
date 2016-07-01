@@ -5,7 +5,7 @@ Todo2 is a task manegment app I've built to learn a few new skills
  - How to build a complex Javascript frontend without a framework
  - How to meet AAA conformance on a single page application
 
-## Running Localy
+## Running Locally
 
 ### PHP & MYSQL
 You'll need a way to run this app on Apache with PHP and MYSQL. I've been running this app with MAMP
