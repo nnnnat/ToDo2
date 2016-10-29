@@ -35,7 +35,7 @@ App.prototype.init = function() {
 */
 App.prototype.request = function() {
   var app = this;
-  var action = (app.completedTodoLoaded == false ? 'upcoming' : 'completed');
+  var action = (app.completedTodoLoaded === false ? 'upcoming' : 'completed');
   var request = new XMLHttpRequest();
 
   request.open('GET', '?action='+action, true);
@@ -140,4 +140,4 @@ App.prototype.removeTodo = function(id, delay) {
 };
 
 // Exporting my module brah!
-module.exports = App;
+export default App;

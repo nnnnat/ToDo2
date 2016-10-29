@@ -1,18 +1,19 @@
 {
   "author": "Nat Hamilton",
-  "config": {
-  },
   "scripts": {
     "gulp": "gulp",
     "prestart": "npm install",
     "build": "npm install && gulp",
-    "start": "gulp --dev"
+    "start": "gulp --dev",
+    "watch": "gulp watch --dev"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "private": true,
   "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babelify": "^7.3.0",
     "browser-sync": "*",
     "browserify": "*",
     "del": "*",

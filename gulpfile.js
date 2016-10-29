@@ -2,6 +2,7 @@
 var _ = require('lodash');
 var autoprefixer = require('gulp-autoprefixer');
 var browserify = require('browserify');
+var babelify = require("babelify");
 var browserSync = require('browser-sync');
 var csso = require('gulp-csso');
 var del = require('del');
@@ -43,12 +44,13 @@ config.dev = gutil.env.dev;
 
 // clean
 gulp.task('clean', function (cb) {
-    //del(['dist'], cb);
 });
 
 // scripts
 gulp.task('scripts', function () {
-    return browserify(config.scripts.src).bundle()
+    return browserify(config.scripts.src)
+        .transform("babelify", {presets: ["es2015"]})
+        .bundle()
         .on('error', function (error) {
             gutil.log(gutil.colors.red(error));
             this.emit('end');
@@ -60,11 +62,11 @@ gulp.task('scripts', function () {
 
 // jshint telling me my js is bs
 gulp.task('jshint', function (cb) {
-    return gulp.src(config.scripts.watch)
+    /* return gulp.src(config.scripts.watch)
         .pipe(jshint())
         .pipe(jshint.reporter(stylish))
         .pipe(jshint.reporter('fail'))
-        .on('error', cb);
+        .on('error', cb); */
 });
 
 // styles
