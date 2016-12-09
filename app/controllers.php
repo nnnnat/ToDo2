@@ -8,6 +8,13 @@
       $serviceLoaded = true;
     }
 
+    // grabing all todos
+    public function all() {
+      $todo_list = Todo::all();
+
+      echo json_encode($todo_list);
+    }
+
     // grabing all upcoming todos
     public function upcoming() {
       $todo_list = Todo::get_upcoming();

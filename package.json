@@ -26,9 +26,14 @@
     "gulp-streamify": "*",
     "gulp-uglify": "*",
     "gulp-util": "*",
+    "jshint": "^2.9.4",
     "jshint-stylish": "*",
     "lodash": "*",
     "run-sequence": "*",
     "vinyl-source-stream": "*"
+  },
+  "dependencies": {
+    "es6-promise": "^4.0.5",
+    "isomorphic-fetch": "^2.2.1"
   }
 }
