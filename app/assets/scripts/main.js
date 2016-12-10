@@ -1,15 +1,11 @@
 //import { requestData, getData } from './_helpers';
 
-import { polyfill } from 'es6-promise';
-import fetch from 'isomorphic-fetch';
-
 import App from './_new-app';
 
 let ready = false; // This is needed to prevent onreadystatechange being run twice
-
 document.onreadystatechange = () => {
   if (ready) {
-    return;
+          return;
   }
   // interactive = DOMContentLoaded & complete = window.load
   if (document.readyState === 'interactive' || document.readyState === 'complete') {
