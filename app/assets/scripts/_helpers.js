@@ -1,35 +1,29 @@
-import { polyfill } from 'es6-promise';
-import fetch from 'isomorphic-fetch';
-
-export function requestData(action, callback) {
-  let request = new XMLHttpRequest();
-
-  request.onload = (e) => {
-    let data = JSON.parse(request.response);
-    callback(data);
-  };
-  request.open('GET', '?action='+action, true);
-  request.send();
-  // request.onerror = (e) => {
-  //   console.log('connection error');
-  // };
+export function getTodos(type = 'upcoming', callback) {
+  fetch(`?action=${type}`)
+    .then(response => response.json())
+    .then(todos => callback(todos));
 }
 
-export function returnData(data) {
-  // console.log('hey');
-  // console.log(data);
-  return data;
+export function updateTodo(type, fields, callback) {
+  fetch(`?action=${type}${fields}`)
+    .then(response => response.json())
+    .then(todo => callback(todo));
 }
 
-export function getData() {
-  fetch('?action=upcoming')
-  .then(function(response) {
-      if (response.status >= 400) {
-          throw new Error("Bad response from server");
-      }
-      return response.json();
-  })
-  .then(function(stories) {
-      console.log(stories);
-  });
+export function dbDate(date) {
+  const realDate = new Date(date);
+  const year = realDate.getFullYear();
+  let dd = realDate.getDate();
+  let mm = realDate.getMonth();
+
+
+  return `${mm}/${dd}/${year}`;
+}
+
+export function viewDate(date) {
+  return date;
+}
+
+export function emptyText(text) {
+  return (text == '');
 }

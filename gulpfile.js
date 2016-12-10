@@ -12,12 +12,12 @@ var webpack = require('gulp-webpack');
 
 var config = {
   scripts: {
-    watch: './app/assets/scripts/*.js',
+    watch: './app/assets/scripts/**.js',
     entry: './app/assets/scripts/main.js',
     dest: './app/assets/build/'
   },
   styles: {
-    watch: './app/assets/styles/*.scss',
+    watch: './app/assets/styles/**.scss',
     entry: './app/assets/styles/main.scss',
     dest: './app/assets/build/'
   },
