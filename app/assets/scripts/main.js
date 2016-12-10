@@ -1,15 +1,25 @@
-var App = require('./_app.js');
-var ready = false; // This is needed to prevent onreadystatechange being run twice
+//import { requestData, getData } from './_helpers';
 
-document.onreadystatechange = function () {
+import App from './_new-app';
+
+let ready = false; // This is needed to prevent onreadystatechange being run twice
+document.onreadystatechange = () => {
   if (ready) {
-    return;
+          return;
   }
   // interactive = DOMContentLoaded & complete = window.load
   if (document.readyState === 'interactive' || document.readyState === 'complete') {
     ready = true;
 
-    var app = new App();
-    app.init();
+    fetch('?action=all')
+    .then(response => {
+      if (response.status >= 400) {
+        throw new Error("Bad response from server");
+      }
+      return response.json();
+    })
+    .then(data => {
+      window.app = new App(data);
+    });
   }
 };
