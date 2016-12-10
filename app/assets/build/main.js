@@ -180,7 +180,6 @@
 	      newTodo.edit = this.todoEdit.bind(this);
 	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [newTodo]);
 	      if (!newTodo.rendered) this.addTodo(newTodo);
-	      console.log(this.activeTodos);
 	    }
 	  }, {
 	    key: 'addTodo',
@@ -210,7 +209,6 @@
 	      this.activeTodos = this.activeTodos.filter(function (aT) {
 	        return todo.id != aT.id;
 	      });
-	      console.log(this.activeTodos);
 	    }
 	  }, {
 	    key: 'todoPrimaryAction',

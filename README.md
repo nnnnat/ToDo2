@@ -20,16 +20,11 @@ CREATE TABLE todo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255
 
 If you'd like to make changes to the frontend you'll need to run a few comands from the project root in terminal
 
-```
-npm install
-```
-after our Node Modules have installed we can run our gulp task
-
 for devin
 ```
-gulp watch
+npm run watch
 ```
 for buildin
 ```
-gulp
+npm start
 ```

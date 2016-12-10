@@ -57,7 +57,6 @@ class App {
     newTodo.edit = this.todoEdit.bind(this);
     this.activeTodos = [...this.activeTodos, newTodo ];
     if (!newTodo.rendered) this.addTodo(newTodo);
-    console.log(this.activeTodos);
   }
 
   addTodo(todo) {
@@ -76,7 +75,6 @@ class App {
     setTimeout(() => {this.listEL.removeChild(todo.div)}, delay + 300);
     todo.rendered = false;
     this.activeTodos = this.activeTodos.filter(aT => todo.id != aT.id);
-    console.log(this.activeTodos);
   }
 
   todoPrimaryAction(todo) {
