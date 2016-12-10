@@ -123,4 +123,4 @@ composer.phar
 /vendor/
 
 ### JetBrains ###
-.idea
+.idea/
