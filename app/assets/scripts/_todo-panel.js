@@ -58,9 +58,9 @@ class Panel {
   }
 
   close() {
-    this.form.reset();
     this.active = false;
     this.sectionEL.classList.remove('active');
+    this.form.reset();
   }
 
 

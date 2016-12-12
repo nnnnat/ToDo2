@@ -564,9 +564,9 @@
 	  }, {
 	    key: 'close',
 	    value: function close() {
-	      this.form.reset();
 	      this.active = false;
 	      this.sectionEL.classList.remove('active');
+	      this.form.reset();
 	    }
 	  }, {
 	    key: 'setDate',
