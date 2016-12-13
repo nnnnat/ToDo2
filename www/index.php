@@ -1,6 +1,8 @@
 <?php
 
-  ini_set('display_errors', 1); // turning on error messages
+  //phpinfo();
+  //ini_set('display_errors', 1); // turning on error messages
+
   define('APP', './app/'); // setting a app path constant
   define('TEMPLATES', './app/templates/'); // setting a tamplate path constant
   define('STYLES', './app/assets/build/main.css'); // setting a css file path constant
