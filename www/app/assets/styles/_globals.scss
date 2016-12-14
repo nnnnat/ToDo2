@@ -216,22 +216,23 @@ $dirs: t r b l;
   @each $color, $i in $colors {
     &.#{$color} {
       //@include transition(transform $macroTransition $macroEase, opacity $macroTransition $macroEase);
-      color: #{$i};
+      border-color: red;
+      color: red;
 
       .todo-info {
-        border-color: #{$i};
+        border-color: red;
       }
 
       .todo-primary-action {
-        border-color: #{$i};
+        border-color: red;
 
         @include breakPoint(sm) {
-          border-color: #{$i};
+          border-color: red;
         }
       }
 
       .button.button--primary {
-        background-color: #{$i};
+        background-color: red;
 
         &:hover,
         &:focus {
@@ -240,13 +241,13 @@ $dirs: t r b l;
       }
 
       .button.button--secondary {
-        border-color: #{$i};
-        color: #{$i};
+        border-color: red;
+        color: red;
 
         &:hover,
         &:focus {
           background-color: #{$i};
-          color: $background;
+          color: currentColor;
         }
       }
 

@@ -102,6 +102,7 @@
 	    this.listBTN = document.querySelector('.js-load-completed-todo');
 	    this.newBTN = document.querySelector('.js-new-todo');
 	    this.delay = 100;
+	    this.todosColor = (0, _helpers.pickColor)();
 	    this.panel = new _todoPanel2.default();
 	    this.panel.newTodo = this.newTodo.bind(this);
 	    this.panel.updateTodo = this.updateTodo.bind(this);
@@ -126,6 +127,7 @@
 	      var listClear = new Promise(function (resolve, reject) {
 	        setTimeout(resolve, _this.delay * _this.activeTodos.length);
 	      });
+	      this.todosColor = (0, _helpers.pickColor)();
 	      this.upcomingList = !this.upcomingList;
 	      this.listBTN.innerHTML = this.upcomingList ? 'Completed Todos' : 'Upcoming Todos';
 	      this.clearList();
@@ -185,7 +187,10 @@
 	    key: 'addTodo',
 	    value: function addTodo(todo) {
 	      var delay = this.delay * this.activeTodos.indexOf(todo);
+	      var color = (0, _helpers.colorDarken)(this.todosColor, -(this.activeTodos.indexOf(todo) / 50));
+	      todo.div.setAttribute('style', ['color: ' + color]);
 	      this.listEL.insertBefore(todo.div, this.listEL.firstChild);
+
 	      todo.in(delay);
 	      todo.rendered = true;
 	    }
@@ -272,7 +277,7 @@
 /* 2 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -281,12 +286,13 @@
 	exports.updateTodo = updateTodo;
 	exports.dbDate = dbDate;
 	exports.viewDate = viewDate;
-	exports.emptyText = emptyText;
+	exports.colorDarken = colorDarken;
+	exports.pickColor = pickColor;
 	function getTodos() {
 	  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'upcoming';
 	  var callback = arguments[1];
 
-	  fetch('?action=' + type).then(function (response) {
+	  fetch("?action=" + type).then(function (response) {
 	    return response.json();
 	  }).then(function (todos) {
 	    return callback(todos);
@@ -294,7 +300,7 @@
 	}
 
 	function updateTodo(type, fields, callback) {
-	  fetch('?action=' + type + fields).then(function (response) {
+	  fetch("?action=" + type + fields).then(function (response) {
 	    return response.json();
 	  }).then(function (todo) {
 	    return callback(todo);
@@ -307,20 +313,35 @@
 	  var dd = realDate.getDate();
 	  var mm = realDate.getMonth();
 
-	  return mm + '/' + dd + '/' + year;
+	  return mm + "/" + dd + "/" + year;
 	}
 
 	function viewDate(date) {
 	  return date;
 	}
 
-	function emptyText(text) {
-	  return text == '';
+	// export function emptyText(text) {
+	//   return (text == '');
+	// }
+
+	function colorDarken(col, amt) {
+	  var f = col.split(","),
+	      t = amt < 0 ? 0 : 255,
+	      p = amt < 0 ? amt * -1 : amt,
+	      R = parseInt(f[0].slice(4)),
+	      G = parseInt(f[1]),
+	      B = parseInt(f[2]);
+	  return "rgb(" + (Math.round((t - R) * p) + R) + "," + (Math.round((t - G) * p) + G) + "," + (Math.round((t - B) * p) + B) + ")";
+	}
+
+	function pickColor() {
+	  var colors = ['rgb(0,117,217)', 'rgb(0,137,87)', 'rgb(220, 0, 173)', 'rgb(177, 13, 201)'];
+	  return colors[Math.floor(Math.random() * colors.length)];
 	}
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -329,6 +350,8 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _helpers = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -347,6 +370,7 @@
 	    this.edit = null;
 
 	    this.div = null;
+	    this.color = 'B10DC9';
 	    this.deleteBTN = null;
 	    this.editBTN = null;
 	    this.primaryBTN = null;
@@ -406,11 +430,11 @@
 	    key: 'build',
 	    value: function build() {
 	      var todo = this;
-	      var colors = ['blue', 'green', 'pink', 'purple'];
-	      var color = colors[Math.floor(Math.random() * colors.length)];
+	      var color = this.color;
 	      // creating todo div
 	      todo.div = document.createElement('div');
-	      todo.div.className = todo.complete === false ? 'todo js-todo-in ' + color : 'todo complete js-todo-in ' + color;
+	      todo.div.setAttribute('style', ['color: #' + color]);
+	      todo.div.className = todo.complete === false ? 'todo js-todo-in' : 'todo complete js-todo-in';
 	      todo.div.id = todo.id;
 	      todo.div.tabIndex = 0;
 

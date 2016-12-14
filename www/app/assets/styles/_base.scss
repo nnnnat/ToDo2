@@ -151,14 +151,16 @@ li {
   // button color styles
   // primary button styles
   &--primary {
-    background-color: $typeColor;
-    border: $lineWeight solid $typeColor;
-    color: $background;
+    background-color: transparent;
+    border: $lineWeight solid currentColor;
+    color: $white;
     padding: ms(0);
+    z-index: $z1;
 
     &:hover,
     &:focus {
-      background-color: $highlight;
+      background-color: $white;
+      color: currentColor;
     }
 
     // inverted version of same color way
@@ -177,17 +179,18 @@ li {
 
   // secondary button styles looks like a link
   &--secondary {
-    background-color: $background;
+    background-color: $white;
     border: none;
-    border-bottom: $lineWeight solid $typeColor;
-    color: $typeColor;
+    border-bottom: $lineWeight solid currentColor;
+    color: currentColor;
     margin-top: ms(0);
     padding: 0;
 
     &:hover,
     &:focus {
-      background-color: $typeColor;
-      color: $background;
+      background-color: transparent;
+      color: $typeColor;
+      border-bottom: $lineWeight solid currentColor;
     }
   }
   // button color styles
@@ -325,6 +328,7 @@ footer {
   top: 0;
   transform: scale(0,0);
   width: 100vw;
+  z-index: $z10;
 
   &.active {
     @include transition(transform $macroTransition $macroEase, opacity $macroTransition $macroEase $microTransition);

@@ -57,7 +57,7 @@
     public static function get_upcoming() {
       $todo_list = [];
       $db = Database::getInstance();
-      $request = $db->query('SELECT * FROM todo WHERE completed = 0 ORDER BY due_date DESC LIMIT 6');
+      $request = $db->query('SELECT * FROM todo WHERE completed = 0 ORDER BY due_date DESC');
 
       foreach ($request->fetchAll() as $todo) {
         $todo_list[] = new Todo($todo['id'],$todo['title'],$todo['due_date'],$todo['created_date'],$todo['overdue'],$todo['completed']);
@@ -70,7 +70,7 @@
     public static function get_completed() {
       $todo_list = [];
       $db = Database::getInstance();
-      $request = $db->query('SELECT * FROM todo WHERE completed = 1 ORDER BY due_date DESC LIMIT 6');
+      $request = $db->query('SELECT * FROM todo WHERE completed = 1 ORDER BY due_date DESC');
 
       foreach ($request->fetchAll() as $todo) {
         $todo_list[] = new Todo($todo['id'],$todo['title'],$todo['due_date'],$todo['created_date'],$todo['overdue'],$todo['completed']);

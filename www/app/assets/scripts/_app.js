@@ -1,4 +1,4 @@
-import { getTodos, updateTodo } from './_helpers';
+import { getTodos, updateTodo, pickColor, colorDarken } from './_helpers';
 import Todo from './_todo';
 import Panel from './_todo-panel';
 
@@ -10,6 +10,7 @@ class App {
     this.listBTN = document.querySelector('.js-load-completed-todo');
     this.newBTN = document.querySelector('.js-new-todo');
     this.delay = 100;
+    this.todosColor = pickColor();
     this.panel = new Panel();
     this.panel.newTodo = this.newTodo.bind(this);
     this.panel.updateTodo = this.updateTodo.bind(this);
@@ -27,6 +28,7 @@ class App {
     let listClear = new Promise((resolve, reject) => {
       setTimeout(resolve, this.delay * this.activeTodos.length );
     });
+    this.todosColor = pickColor();
     this.upcomingList = !this.upcomingList;
     this.listBTN.innerHTML = (this.upcomingList) ? 'Completed Todos' : 'Upcoming Todos';
     this.clearList();
@@ -61,7 +63,10 @@ class App {
 
   addTodo(todo) {
     const delay = this.delay * this.activeTodos.indexOf(todo);
+    const color = colorDarken(this.todosColor, -(this.activeTodos.indexOf(todo)/50));
+    todo.div.setAttribute('style',[`color: ${color}`]);
     this.listEL.insertBefore(todo.div, this.listEL.firstChild);
+
     todo.in(delay);
     todo.rendered = true;
   }

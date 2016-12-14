@@ -121,12 +121,14 @@ li {
   .button-group .button:first-of-type {
     margin: 0 1em 0 0; }
   .button--primary {
-    background-color: #111111;
-    border: 2px solid #111111;
+    background-color: transparent;
+    border: 2px solid currentColor;
     color: #ffffff;
-    padding: 1em; }
+    padding: 1em;
+    z-index: 100; }
     .button--primary:hover, .button--primary:focus {
-      background-color: #4d4d4d; }
+      background-color: #ffffff;
+      color: currentColor; }
     .button--primary.invert {
       background-color: #111111;
       border: 2px solid #ffffff;
@@ -137,13 +139,14 @@ li {
   .button--secondary {
     background-color: #ffffff;
     border: none;
-    border-bottom: 2px solid #111111;
-    color: #111111;
+    border-bottom: 2px solid currentColor;
+    color: currentColor;
     margin-top: 1em;
     padding: 0; }
     .button--secondary:hover, .button--secondary:focus {
-      background-color: #111111;
-      color: #ffffff; }
+      background-color: transparent;
+      color: #111111;
+      border-bottom: 2px solid currentColor; }
   .button--large {
     border: none;
     font-size: 1em;
@@ -249,7 +252,8 @@ footer {
   position: fixed;
   top: 0;
   transform: scale(0, 0);
-  width: 100vw; }
+  width: 100vw;
+  z-index: 1000; }
   .todo-panel.active {
     transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1) 0.1s;
     -webkit-transform: translate3d(0, 0, 0);
@@ -310,81 +314,85 @@ Block Styles:
   transform: translateY(0%), translate3d(0, 0, 0);
   width: 100%; }
   .todo.blue {
-    color: #0074D9; }
+    border-color: red;
+    color: red; }
     .todo.blue .todo-info {
-      border-color: #0074D9; }
+      border-color: red; }
     .todo.blue .todo-primary-action {
-      border-color: #0074D9; }
+      border-color: red; }
       @media (min-width: 32em) {
         .todo.blue .todo-primary-action {
-          border-color: #0074D9; } }
+          border-color: red; } }
     .todo.blue .button.button--primary {
-      background-color: #0074D9; }
+      background-color: red; }
       .todo.blue .button.button--primary:hover, .todo.blue .button.button--primary:focus {
         background-color: #3cb0ff; }
     .todo.blue .button.button--secondary {
-      border-color: #0074D9;
-      color: #0074D9; }
+      border-color: red;
+      color: red; }
       .todo.blue .button.button--secondary:hover, .todo.blue .button.button--secondary:focus {
         background-color: #0074D9;
-        color: #ffffff; }
+        color: currentColor; }
   .todo.green {
-    color: #008957; }
+    border-color: red;
+    color: red; }
     .todo.green .todo-info {
-      border-color: #008957; }
+      border-color: red; }
     .todo.green .todo-primary-action {
-      border-color: #008957; }
+      border-color: red; }
       @media (min-width: 32em) {
         .todo.green .todo-primary-action {
-          border-color: #008957; } }
+          border-color: red; } }
     .todo.green .button.button--primary {
-      background-color: #008957; }
+      background-color: red; }
       .todo.green .button.button--primary:hover, .todo.green .button.button--primary:focus {
         background-color: #3cc593; }
     .todo.green .button.button--secondary {
-      border-color: #008957;
-      color: #008957; }
+      border-color: red;
+      color: red; }
       .todo.green .button.button--secondary:hover, .todo.green .button.button--secondary:focus {
         background-color: #008957;
-        color: #ffffff; }
+        color: currentColor; }
   .todo.pink {
-    color: #dc00ad; }
+    border-color: red;
+    color: red; }
     .todo.pink .todo-info {
-      border-color: #dc00ad; }
+      border-color: red; }
     .todo.pink .todo-primary-action {
-      border-color: #dc00ad; }
+      border-color: red; }
       @media (min-width: 32em) {
         .todo.pink .todo-primary-action {
-          border-color: #dc00ad; } }
+          border-color: red; } }
     .todo.pink .button.button--primary {
-      background-color: #dc00ad; }
+      background-color: red; }
       .todo.pink .button.button--primary:hover, .todo.pink .button.button--primary:focus {
         background-color: #ff3ce9; }
     .todo.pink .button.button--secondary {
-      border-color: #dc00ad;
-      color: #dc00ad; }
+      border-color: red;
+      color: red; }
       .todo.pink .button.button--secondary:hover, .todo.pink .button.button--secondary:focus {
         background-color: #dc00ad;
-        color: #ffffff; }
+        color: currentColor; }
   .todo.purple {
-    color: #B10DC9; }
+    border-color: red;
+    color: red; }
     .todo.purple .todo-info {
-      border-color: #B10DC9; }
+      border-color: red; }
     .todo.purple .todo-primary-action {
-      border-color: #B10DC9; }
+      border-color: red; }
       @media (min-width: 32em) {
         .todo.purple .todo-primary-action {
-          border-color: #B10DC9; } }
+          border-color: red; } }
     .todo.purple .button.button--primary {
-      background-color: #B10DC9; }
+      background-color: red; }
       .todo.purple .button.button--primary:hover, .todo.purple .button.button--primary:focus {
         background-color: #ed49ff; }
     .todo.purple .button.button--secondary {
-      border-color: #B10DC9;
-      color: #B10DC9; }
+      border-color: red;
+      color: red; }
       .todo.purple .button.button--secondary:hover, .todo.purple .button.button--secondary:focus {
         background-color: #B10DC9;
-        color: #ffffff; }
+        color: currentColor; }
   @media (min-width: 32em) {
     .todo {
       -ms-flex-direction: row;
@@ -399,7 +407,7 @@ Block Styles:
     opacity: 0;
     transform: translateY(-15%); }
   .todo-info {
-    border: 2px solid #111111;
+    border: 2px solid currentColor;
     padding: 1em;
     min-height: 1px;
     width: 100%; }
@@ -410,18 +418,29 @@ Block Styles:
       .todo-info {
         width: 85%; } }
   .todo-primary-action {
-    border: 2px solid #111111;
+    background-color: transparent;
+    border: 2px solid currentColor;
     border-top: none;
     display: -ms-flexbox;
-    display: flex; }
+    display: flex;
+    position: relative; }
     @media (min-width: 32em) {
       .todo-primary-action {
-        border-top: 2px solid #111111;
+        border-top: 2px solid currentColor;
         border-left: none;
         width: 25%; } }
     @media (min-width: 60em) {
       .todo-primary-action {
         width: 15%; } }
+    .todo-primary-action:after {
+      background-color: currentColor;
+      content: '';
+      color: currentColor;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%; }
 
 .message {
   transition: max-height 0.3s cubic-bezier(0.2, 0, 0.2, 1);
@@ -492,5 +511,14 @@ Element Styles:
   font-weight: 700;
   line-height: 1; }
 
-.js-load-completed-todo {
+.js-load-completed-todo,
+.js-new-todo {
+  color: #111111;
+  border-color: #111111;
   min-width: 11.5em; }
+  .js-load-completed-todo:hover, .js-load-completed-todo:focus,
+  .js-new-todo:hover,
+  .js-new-todo:focus {
+    background-color: #111111;
+    border-color: #111111;
+    color: #ffffff; }

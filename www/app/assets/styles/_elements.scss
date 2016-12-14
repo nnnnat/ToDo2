@@ -11,8 +11,18 @@ Element Styles:
   line-height: 1;
 }
 
-.js-load-completed-todo {
+.js-load-completed-todo,
+.js-new-todo {
+  color: $typeColor;
+  border-color: $typeColor;
   min-width: 11.5em;
+
+  &:hover,
+  &:focus {
+    background-color: $typeColor;
+    border-color: $typeColor;
+    color: $white;
+  }
 }
 // --------------------------------------------------------------------------------------------------------------------
 // Header block elements

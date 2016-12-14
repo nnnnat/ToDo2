@@ -1,3 +1,5 @@
+import { colorDarken } from './_helpers';
+
 class Todo {
   constructor(data) {
     this.rendered = false;
@@ -11,6 +13,7 @@ class Todo {
     this.edit = null;
 
     this.div = null;
+    this.color = 'B10DC9';
     this.deleteBTN = null;
     this.editBTN = null;
     this.primaryBTN = null;
@@ -62,11 +65,11 @@ class Todo {
 
   build() {
     let todo = this;
-    const colors = ['blue','green','pink','purple'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    const color = this.color;
     // creating todo div
     todo.div = document.createElement('div');
-    todo.div.className = (todo.complete === false) ? `todo js-todo-in ${color}` : `todo complete js-todo-in ${color}`;
+    todo.div.setAttribute('style', [`color: #${color}`])
+    todo.div.className = (todo.complete === false) ? `todo js-todo-in` : `todo complete js-todo-in`;
     todo.div.id = todo.id;
     todo.div.tabIndex = 0;
 
