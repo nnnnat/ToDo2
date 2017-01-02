@@ -126,7 +126,5 @@
       $error = array('error'=>'There has been an error with your request dudeman');
       echo json_encode($error);
     }
-
   }
-
 ?>

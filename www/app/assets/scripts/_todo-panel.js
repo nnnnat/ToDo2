@@ -56,12 +56,14 @@ class Panel {
     this.setDate(date);
     this.active = true;
     this.sectionEL.classList.add('active');
+    this.sectionEL.setAttribute('aria-hidden', false);
     this.form.focus();
   }
 
   close() {
     this.active = false;
     this.sectionEL.classList.remove('active');
+    this.sectionEL.setAttribute('aria-hidden', true);
     this.form.reset();
     this.newTodoBTN.focus();
   }

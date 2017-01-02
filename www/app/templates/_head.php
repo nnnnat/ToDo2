@@ -8,9 +8,9 @@
 
   <link rel="stylesheet" href="<?php echo STYLES; ?>">
 
-  <!-- need to set these bad boys up later! -->
+  <!-- TODO: need to set these bad boys up later! -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="./apple-touch-icon-144-precomposed.png">
   <link rel="shortcut icon" href="./favicon.ico">
-  <!-- need to set these bad boys up later! -->
+  <!-- TODO: need to set these bad boys up later! -->
 
 </head>
