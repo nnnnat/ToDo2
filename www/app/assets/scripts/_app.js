@@ -37,7 +37,7 @@ class App {
 
   createList() {
     const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
-    getTodos(todoType, (todos) => todos.map(todo => this.createTodo(todo)));
+    getTodos(todoType, todos => todos.map(todo => this.createTodo(todo)));
   }
 
   clearList() {

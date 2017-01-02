@@ -13,9 +13,8 @@ export function updateTodo(type, fields, callback) {
 export function dbDate(date) {
   const realDate = new Date(date);
   const year = realDate.getFullYear();
-  let dd = realDate.getDate();
-  let mm = realDate.getMonth();
-
+  const dd = realDate.getDate();
+  const mm = realDate.getMonth();
 
   return `${mm}/${dd}/${year}`;
 }

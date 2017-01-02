@@ -2,7 +2,6 @@ import { colorDarken, dateCompair } from './_helpers';
 
 class Todo {
   constructor(data) {
-    console.log(data);
     this.rendered = false;
     this.id = data.id;
     this.title = data.title;

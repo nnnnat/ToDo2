@@ -366,7 +366,6 @@
 	  function Todo(data) {
 	    _classCallCheck(this, Todo);
 
-	    console.log(data);
 	    this.rendered = false;
 	    this.id = data.id;
 	    this.title = data.title;
@@ -535,6 +534,7 @@
 	    this.newTodo = null;
 	    this.updateTodo = null;
 	    this.errors = [];
+	    this.newTodoBTN = document.querySelector('.js-new-todo');
 	    this.sectionEL = document.querySelector('.todo-panel');
 	    this.form = this.sectionEL.querySelector('.todo-panel-form');
 	    this.submitBTN = this.form.querySelector('.js-submit');
@@ -592,6 +592,7 @@
 	      this.setDate(date);
 	      this.active = true;
 	      this.sectionEL.classList.add('active');
+	      this.form.focus();
 	    }
 	  }, {
 	    key: 'close',
@@ -599,6 +600,7 @@
 	      this.active = false;
 	      this.sectionEL.classList.remove('active');
 	      this.form.reset();
+	      this.newTodoBTN.focus();
 	    }
 	  }, {
 	    key: 'setDate',

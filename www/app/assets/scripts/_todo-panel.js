@@ -7,6 +7,7 @@ class Panel {
     this.newTodo = null;
     this.updateTodo = null;
     this.errors = [];
+    this.newTodoBTN = document.querySelector('.js-new-todo');
     this.sectionEL = document.querySelector('.todo-panel');
     this.form = this.sectionEL.querySelector('.todo-panel-form');
     this.submitBTN = this.form.querySelector('.js-submit');
@@ -55,14 +56,15 @@ class Panel {
     this.setDate(date);
     this.active = true;
     this.sectionEL.classList.add('active');
+    this.form.focus();
   }
 
   close() {
     this.active = false;
     this.sectionEL.classList.remove('active');
     this.form.reset();
+    this.newTodoBTN.focus();
   }
-
 
   setDate(date) {
     date = new Date(date);
