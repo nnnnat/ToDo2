@@ -286,6 +286,7 @@
 	exports.updateTodo = updateTodo;
 	exports.dbDate = dbDate;
 	exports.viewDate = viewDate;
+	exports.dateCompair = dateCompair;
 	exports.colorDarken = colorDarken;
 	exports.pickColor = pickColor;
 	function getTodos() {
@@ -320,9 +321,15 @@
 	  return date;
 	}
 
-	// export function emptyText(text) {
-	//   return (text == '');
-	// }
+	function dateCompair(date1) {
+	  var date2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+
+	  var d1 = new Date(date1);
+	  var d2 = new Date(date2);
+	  d1.setHours(0, 0, 0, 0);
+	  d2.setHours(0, 0, 0, 0);
+	  return d1 < d2 ? true : false;
+	}
 
 	function colorDarken(col, amt) {
 	  var f = col.split(","),
@@ -359,11 +366,12 @@
 	  function Todo(data) {
 	    _classCallCheck(this, Todo);
 
+	    console.log(data);
 	    this.rendered = false;
 	    this.id = data.id;
 	    this.title = data.title;
 	    this.dueDate = data.due_date;
-	    this.overdue = data.overdue;
+	    this.overdue = (0, _helpers.dateCompair)(data.due_date);
 	    this.complete = data.complete;
 	    this.primaryAction = null;
 	    this.delete = null;
@@ -623,12 +631,8 @@
 	  }, {
 	    key: 'validateDueDate',
 	    value: function validateDueDate() {
-	      var todaysDate = new Date();
-	      var tempDueDate = new Date(this.monthInput.value + '/' + this.dayInput.value + '/' + this.yearInput.value);
-	      todaysDate.setHours(0, 0, 0, 0);
-	      tempDueDate.setHours(0, 0, 0, 0);
-
-	      if (todaysDate.getTime() > tempDueDate.getTime()) {
+	      var dateValid = (0, _helpers.dateCompair)(this.monthInput.value + '/' + this.dayInput.value + '/' + this.yearInput.value);
+	      if (dateValid) {
 	        this.dateGroup.classList.add('error');
 	        this.errorMessages[1].classList.add('active');
 	        return false;

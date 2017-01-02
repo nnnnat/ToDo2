@@ -1,4 +1,4 @@
-import { dbDate } from './_helpers';
+import { dbDate, dateCompair } from './_helpers';
 class Panel {
   constructor() {
     this.active = false;
@@ -91,12 +91,8 @@ class Panel {
   }
 
   validateDueDate() {
-    const todaysDate = new Date();
-    const tempDueDate = new Date(`${this.monthInput.value}/${this.dayInput.value}/${this.yearInput.value}`);
-    todaysDate.setHours(0,0,0,0);
-    tempDueDate.setHours(0,0,0,0);
-
-    if (todaysDate.getTime() > tempDueDate.getTime()) {
+    const dateValid = dateCompair(`${this.monthInput.value}/${this.dayInput.value}/${this.yearInput.value}`);
+    if (dateValid) {
       this.dateGroup.classList.add('error');
       this.errorMessages[1].classList.add('active');
       return false;

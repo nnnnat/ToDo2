@@ -24,9 +24,13 @@ export function viewDate(date) {
   return date;
 }
 
-// export function emptyText(text) {
-//   return (text == '');
-// }
+export function dateCompair(date1, date2 = new Date()) {
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  d1.setHours(0,0,0,0);
+  d2.setHours(0,0,0,0);
+  return (d1 < d2) ? true : false;
+}
 
 export function colorDarken(col, amt) {
   const f=col.split(","),

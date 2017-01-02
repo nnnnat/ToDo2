@@ -11,7 +11,7 @@ services:
     links:
       - mysql
   mysql:
-    image: lgelfan/mariadb-alpine
+    image: k0st/alpine-mariadb
     ports:
       - "3306:3306"
     volumes:
@@ -21,3 +21,9 @@ services:
       - MYSQL_USER=nat
       - MYSQL_PASSWORD=Att26-one-nola
       - MYSQL_ROOT_PASSWORD=dbroopass
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    links:
+      - mysql:db

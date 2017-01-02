@@ -1,4 +1,4 @@
-import { getTodos, updateTodo, pickColor, colorDarken } from './_helpers';
+import { getTodos, updateTodo, pickColor, colorDarken, dateCompair } from './_helpers';
 import Todo from './_todo';
 import Panel from './_todo-panel';
 

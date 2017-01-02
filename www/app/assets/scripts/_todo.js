@@ -1,12 +1,13 @@
-import { colorDarken } from './_helpers';
+import { colorDarken, dateCompair } from './_helpers';
 
 class Todo {
   constructor(data) {
+    console.log(data);
     this.rendered = false;
     this.id = data.id;
     this.title = data.title;
     this.dueDate = data.due_date;
-    this.overdue = data.overdue;
+    this.overdue = dateCompair(data.due_date);
     this.complete = data.complete;
     this.primaryAction = null;
     this.delete = null;
