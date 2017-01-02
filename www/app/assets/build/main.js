@@ -115,6 +115,7 @@
 	    value: function events() {
 	      this.listBTN.addEventListener('click', this.changeList.bind(this));
 	      this.newBTN.addEventListener('click', this.panel.open.bind(this.panel));
+	      // TODO: when the new todo panel is opened we need to reload the upcoming todos list.
 	    }
 
 	    // List Functions
@@ -432,6 +433,16 @@
 	    value: function refresh() {
 	      this.div.querySelector('h3.todo-info__title').innerHTML = this.title;
 	      this.div.querySelector('h2.todo-info__title span.text').innerHTML = this.dueDate;
+	      this.isOverdue();
+	    }
+	  }, {
+	    key: 'isOverdue',
+	    value: function isOverdue() {
+	      if ((0, _helpers.dateCompair)(this.dueDate)) {
+	        this.div.querySelector('.message').classList.add('active');
+	      } else {
+	        this.div.querySelector('.message').classList.remove('active');
+	      }
 	    }
 	  }, {
 	    key: 'build',

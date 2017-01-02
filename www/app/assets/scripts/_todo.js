@@ -61,6 +61,15 @@ class Todo {
   refresh() {
     this.div.querySelector('h3.todo-info__title').innerHTML = this.title;
     this.div.querySelector('h2.todo-info__title span.text').innerHTML = this.dueDate;
+    this.isOverdue();
+  }
+
+  isOverdue() {
+    if (dateCompair(this.dueDate)) {
+      this.div.querySelector('.message').classList.add('active');
+    }else {
+      this.div.querySelector('.message').classList.remove('active');
+    }
   }
 
   build() {

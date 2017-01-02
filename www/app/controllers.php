@@ -8,13 +8,6 @@
       $serviceLoaded = true;
     }
 
-    // grabing all todos
-    public function all() {
-      $todo_list = Todo::all();
-
-      echo json_encode($todo_list);
-    }
-
     // grabing all upcoming todos
     public function upcoming() {
       $todo_list = Todo::get_upcoming();
@@ -89,19 +82,6 @@
       $id = $_GET['id'];
       $reset_todo = Todo::reset_todo($id);
       $todo = Todo::get_todo($reset_todo);
-
-      echo json_encode($todo);
-    }
-
-    // Setting a todo as overdue
-    public function overdue() {
-      if (!isset($_GET['id'])) {
-        return call('error');
-      }
-
-      $id = $_GET['id'];
-      $overdue_todo = Todo::overdue_todo($id);
-      $todo = Todo::get_todo($overdue_todo);
 
       echo json_encode($todo);
     }

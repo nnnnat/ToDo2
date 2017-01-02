@@ -21,6 +21,7 @@ class App {
   events() {
     this.listBTN.addEventListener('click', this.changeList.bind(this));
     this.newBTN.addEventListener('click', this.panel.open.bind(this.panel));
+    // TODO: when the new todo panel is opened we need to reload the upcoming todos list.
   }
 
   // List Functions

@@ -21,38 +21,6 @@
       $this->complete = ($complete == 0 ? false : true);
     }
 
-    // Returns all todos
-    public static function get_all() {
-      $todo_list = [
-        "upcoming" => [],
-        "completed" => []
-      ];
-      $db = Database::getInstance();
-      $request = $db->query('SELECT * FROM todo ORDER BY due_date DESC LIMIT 34');
-
-      foreach ($request->fetchAll() as $todo) {
-
-        if($todo['completed'] == 0) {
-          $todo_list["upcoming"][] = new Todo($todo['id'],$todo['title'],$todo['due_date'],$todo['created_date'],$todo['overdue'],$todo['completed']);
-        }else {
-          $todo_list["completed"][] = new Todo($todo['id'],$todo['title'],$todo['due_date'],$todo['created_date'],$todo['overdue'],$todo['completed']);
-        }
-      }
-
-      return $todo_list;
-    }
-
-    public static function all() {
-      $todo_list = [];
-      $db = Database::getInstance();
-      $request = $db->query('SELECT * FROM todo ORDER BY due_date DESC');
-      foreach ($request->fetchAll() as $todo) {
-        $todo_list[] = new Todo($todo['id'],$todo['title'],$todo['due_date'],$todo['created_date'],$todo['overdue'],$todo['completed']);
-      }
-      return $todo_list;
-    }
-
-
     // Returns all upcoming todos
     public static function get_upcoming() {
       $todo_list = [];
@@ -132,17 +100,6 @@
       $id = intval($id);
       $vals = array('id'=>$id);
       $request = $db->prepare('UPDATE todo SET completed=0 WHERE id = :id');
-      $request->execute($vals);
-
-      return $id;
-    }
-
-    // Setting a todo as overdue
-    public static function overdue_todo($id) {
-      $db = Database::getInstance();
-      $id = intval($id);
-      $vals = array('id'=>$id);
-      $request = $db->prepare('UPDATE todo SET overdue=1 WHERE id = :id');
       $request->execute($vals);
 
       return $id;
