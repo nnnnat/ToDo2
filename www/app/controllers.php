@@ -22,18 +22,6 @@
       echo json_encode($todo_list);
     }
 
-    // grabing a todo by id
-    public function get() {
-      if (!isset($_GET['id'])) {
-        return call('error');
-      }
-
-      $id = $_GET['id'];
-      $todo = Todo::get_todo($id);
-
-      echo json_encode($todo);
-    }
-
     // create a new todo
     public function create() {
       if (!isset($_GET['title']) || !isset($_GET['due_date'])) {
