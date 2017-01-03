@@ -236,7 +236,7 @@ footer {
   padding: 1.69em 0 2.8561em; }
 
 .todo-panel {
-  transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1) 0.1s, opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+  transition: opacity 0.1s cubic-bezier(0.2, 0, 0.2, 1), transform 0.1s cubic-bezier(0.2, 0, 0.2, 1) 0.1s;
   -webkit-transform: translate3d(0, 0, 0);
   -ms-flex-align: center;
       align-items: center;
@@ -251,12 +251,10 @@ footer {
   opacity: 0;
   position: fixed;
   top: 0;
-  transform: scale(0, 0);
+  transform: scale(0.5, 0.5);
   width: 100vw;
   z-index: 1000; }
   .todo-panel.active {
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1) 0.1s;
-    -webkit-transform: translate3d(0, 0, 0);
     opacity: 1;
     transform: scale(1, 1); }
 
