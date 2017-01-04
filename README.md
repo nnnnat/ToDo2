@@ -18,7 +18,7 @@ CREATE TABLE todo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255
 ```
 ### Javascript & SCSS
 
-If you'd like to make changes to the frontend you'll need to run a few commands from the project root in terminal
+If you'd like to make changes to the frontend you'll need to run a few commands from the `www/` directory in terminal
 
 for devin
 ```
