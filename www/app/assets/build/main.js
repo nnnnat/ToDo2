@@ -46,9 +46,9 @@
 
 	'use strict';
 
-	var _new_app = __webpack_require__(1);
+	var _app = __webpack_require__(1);
 
-	var _new_app2 = _interopRequireDefault(_new_app);
+	var _app2 = _interopRequireDefault(_app);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61,7 +61,7 @@
 	  if (document.readyState === 'interactive' || document.readyState === 'complete') {
 	    ready = true;
 
-	    window.app = new _new_app2.default();
+	    window.app = new _app2.default();
 	  }
 	};
 
@@ -76,8 +76,6 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	//import Panel from './_todo-panel';
-
 
 	var _helpers = __webpack_require__(2);
 
@@ -89,9 +87,9 @@
 
 	var _todo2 = _interopRequireDefault(_todo);
 
-	var _newPanel = __webpack_require__(6);
+	var _panel = __webpack_require__(6);
 
-	var _newPanel2 = _interopRequireDefault(_newPanel);
+	var _panel2 = _interopRequireDefault(_panel);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -112,7 +110,7 @@
 	    this.displayUpcoming = true;
 
 	    // dom
-	    this.panel = new _newPanel2.default();
+	    this.panel = new _panel2.default();
 	    this.panel.submitTodo = this.panelSubmitAction.bind(this);
 	    this.listEL = document.querySelector('#todo-list');
 	    this.toggleListBTN = document.querySelector('[data-toggle-list]');
