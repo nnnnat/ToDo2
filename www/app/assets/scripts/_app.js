@@ -19,8 +19,19 @@ class App {
     this.events();
     this.createList();
     this.state.on('All Todos', todos => todos.map(todo => this.createTodo(todo)));
-    this.state.on('New Todo', todo => this.createTodo(todo));
-    this.state.on('Updated Todo', todo => console.log(todo));
+    this.state.on('New Todo', todo => {
+      this.createTodo(todo);
+      this.sortList();
+    });
+    this.state.on('Updated Todo', todo => {
+      let activeTodo = this.activeTodos.find(aT => aT.id == todo.id);
+      activeTodo.title = todo.title;
+      activeTodo.dueDate = todo.due_date;
+      activeTodo.refresh();
+      this.sortList();
+      this.panel.editing = false;
+    });
+    this.state.on('Delete Todo', todo => this.removeTodo(todo, this.delay));
 
   }
 
@@ -100,28 +111,15 @@ class App {
   }
 
   todoDelete(todo) {
-    updateTodo('delete', `&id=${todo.id}`, id => {
-      this.removeTodo(todo, this.delay);
-    });
+    this.state.post('Delete Todo', todo);
   }
 
-  updateTodo(fields) {
-    updateTodo('edit', fields, todo => {
-      let activeTodo = this.activeTodos.find(aT => aT.id == todo.id);
-      activeTodo.title = todo.title;
-      activeTodo.dueDate = todo.due_date;
-      activeTodo.refresh();
-      this.sortList();
-      this.panel.editing = false;
-    });
+  updateTodo(todo) {
+    this.state.post('Update Todo', todo);
   }
 
-  newTodo(fields) {
-    console.log(fields);
-    // updateTodo('create', fields, todo => {
-    //   this.createTodo(todo);
-    //   this.sortList();
-    // });
+  newTodo(todo) {
+    this.state.post('New Todo', todo);
   }
   // Todo Functions
 }

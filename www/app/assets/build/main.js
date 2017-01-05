@@ -122,10 +122,21 @@
 	      });
 	    });
 	    this.state.on('New Todo', function (todo) {
-	      return _this.createTodo(todo);
+	      _this.createTodo(todo);
+	      _this.sortList();
 	    });
 	    this.state.on('Updated Todo', function (todo) {
-	      return console.log(todo);
+	      var activeTodo = _this.activeTodos.find(function (aT) {
+	        return aT.id == todo.id;
+	      });
+	      activeTodo.title = todo.title;
+	      activeTodo.dueDate = todo.due_date;
+	      activeTodo.refresh();
+	      _this.sortList();
+	      _this.panel.editing = false;
+	    });
+	    this.state.on('Delete Todo', function (todo) {
+	      return _this.removeTodo(todo, _this.delay);
 	    });
 	  }
 
@@ -247,36 +258,17 @@
 	  }, {
 	    key: 'todoDelete',
 	    value: function todoDelete(todo) {
-	      var _this7 = this;
-
-	      (0, _helpers.updateTodo)('delete', '&id=' + todo.id, function (id) {
-	        _this7.removeTodo(todo, _this7.delay);
-	      });
+	      this.state.post('Delete Todo', todo);
 	    }
 	  }, {
 	    key: 'updateTodo',
-	    value: function updateTodo(fields) {
-	      var _this8 = this;
-
-	      (0, _helpers.updateTodo)('edit', fields, function (todo) {
-	        var activeTodo = _this8.activeTodos.find(function (aT) {
-	          return aT.id == todo.id;
-	        });
-	        activeTodo.title = todo.title;
-	        activeTodo.dueDate = todo.due_date;
-	        activeTodo.refresh();
-	        _this8.sortList();
-	        _this8.panel.editing = false;
-	      });
+	    value: function updateTodo(todo) {
+	      this.state.post('Update Todo', todo);
 	    }
 	  }, {
 	    key: 'newTodo',
-	    value: function newTodo(fields) {
-	      console.log(fields);
-	      // updateTodo('create', fields, todo => {
-	      //   this.createTodo(todo);
-	      //   this.sortList();
-	      // });
+	    value: function newTodo(todo) {
+	      this.state.post('New Todo', todo);
 	    }
 	    // Todo Functions
 
@@ -400,20 +392,20 @@
 	      this.request('All Todos', options);
 	    }
 	  }, {
-	    key: 'update',
-	    value: function update(todo) {
+	    key: 'post',
+	    value: function post(message, todo) {
 	      var body = new FormData();
 	      for (var i in todo) {
 	        body.append(i, todo[i]);
 	      }
 	      var options = { method: 'POST', body: body };
-	      this.request(options);
+	      this.request(message, options);
 	    }
 	  }, {
 	    key: 'delete',
-	    value: function _delete(todo) {
+	    value: function _delete(message, todo) {
 	      var options = { method: 'DELETE', body: JSON.stringify(todo) };
-	      this.request(options);
+	      this.request(message, options);
 	    }
 	  }, {
 	    key: 'request',
@@ -1059,14 +1051,14 @@
 	    value: function prepTodo() {
 	      var date = this.yearInput.value + '-' + this.monthInput.value + '-' + this.dayInput.value;
 	      var id = this.currentEditId != null ? '&id=' + this.currentEditId : '';
-	      var fields = '&title=' + title + '&due_date=' + date + id;
+	      //const fields = `&title=${title}&due_date=${date}${id}`;
 
 	      var todo = { id: null, title: this.titleInput.value, due_date: date, completed: false };
 	      if (this.validateTitle() && this.validateDueDate()) {
 	        if (this.editing) {
 	          this.updateTodo(todo);
 	        } else {
-	          this.newTodo(fields);
+	          this.newTodo(todo);
 	        }
 	        this.close();
 	      }

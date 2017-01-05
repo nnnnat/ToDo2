@@ -110,14 +110,14 @@ class Panel {
   prepTodo() {
     const date = `${this.yearInput.value}-${this.monthInput.value}-${this.dayInput.value}`;
     const id = (this.currentEditId != null) ? `&id=${this.currentEditId}` : ``;
-    const fields = `&title=${title}&due_date=${date}${id}`;
+    //const fields = `&title=${title}&due_date=${date}${id}`;
 
     const todo = {id:null, title:this.titleInput.value, due_date: date, completed:false};
     if (this.validateTitle() && this.validateDueDate()) {
       if (this.editing) {
         this.updateTodo(todo);
       }else {
-        this.newTodo(fields);
+        this.newTodo(todo);
       }
       this.close();
     }

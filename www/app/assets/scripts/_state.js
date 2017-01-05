@@ -17,18 +17,18 @@ class State {
     this.request('All Todos',options);
   }
 
-  update(todo) {
+  post(message, todo) {
     let body = new FormData();
     for(let i in todo) {
       body.append(i, todo[i]);
     }
     const options = {method: 'POST', body: body};
-    this.request(options);
+    this.request(message, options);
   }
 
-  delete(todo) {
+  delete(message, todo) {
     const options = {method: 'DELETE', body: JSON.stringify(todo)};
-    this.request(options);
+    this.request(message, options);
   }
 
   request(message, options) {
