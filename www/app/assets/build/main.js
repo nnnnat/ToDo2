@@ -46,13 +46,13 @@
 
 	'use strict';
 
-	var _app = __webpack_require__(1);
+	var _new_app = __webpack_require__(1);
 
-	var _app2 = _interopRequireDefault(_app);
+	var _new_app2 = _interopRequireDefault(_new_app);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var ready = false; // This is needed to prevent onreadystatechange being run twice
+	var ready = false;
 	document.onreadystatechange = function () {
 	  if (ready) {
 	    return;
@@ -60,7 +60,8 @@
 	  // interactive = DOMContentLoaded & complete = window.load
 	  if (document.readyState === 'interactive' || document.readyState === 'complete') {
 	    ready = true;
-	    window.app = new _app2.default();
+
+	    window.app = new _new_app2.default();
 	  }
 	};
 
@@ -75,16 +76,22 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	//import Panel from './_todo-panel';
+
 
 	var _helpers = __webpack_require__(2);
 
-	var _todo = __webpack_require__(3);
+	var _state = __webpack_require__(3);
+
+	var _state2 = _interopRequireDefault(_state);
+
+	var _todo = __webpack_require__(5);
 
 	var _todo2 = _interopRequireDefault(_todo);
 
-	var _todoPanel = __webpack_require__(4);
+	var _newPanel = __webpack_require__(6);
 
-	var _todoPanel2 = _interopRequireDefault(_todoPanel);
+	var _newPanel2 = _interopRequireDefault(_newPanel);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -94,179 +101,264 @@
 
 	var App = function () {
 	  function App() {
+	    var _this = this;
+
 	    _classCallCheck(this, App);
 
+	    // state
+	    this.state = new _state2.default();
+	    this.todos = [];
 	    this.activeTodos = [];
-	    this.upcomingList = true;
+	    this.displayUpcoming = true;
+
+	    // dom
+	    this.panel = new _newPanel2.default();
+	    this.panel.submitTodo = this.panelSubmitAction.bind(this);
 	    this.listEL = document.querySelector('#todo-list');
-	    this.listBTN = document.querySelector('.js-load-completed-todo');
-	    this.newBTN = document.querySelector('.js-new-todo');
+	    this.toggleListBTN = document.querySelector('[data-toggle-list]');
+	    this.newTodoBTN = document.querySelector('[data-new-todo]');
+
+	    // animation & colors
 	    this.delay = 100;
-	    this.todosColor = (0, _helpers.pickColor)();
-	    this.panel = new _todoPanel2.default();
-	    this.panel.newTodo = this.newTodo.bind(this);
-	    this.panel.updateTodo = this.updateTodo.bind(this);
-	    this.events();
-	    this.createList();
+	    this.color = (0, _helpers.pickColor)();
+
+	    // state events
+	    this.state.on('All Todos', this.allTodos.bind(this));
+	    this.state.on('Updated Todo', function (todo) {
+	      return _this.updateTodo(todo);
+	    });
+	    this.state.on('New Todo', function (todo) {
+	      return _this.newTodo(todo);
+	    });
+	    this.state.on('Completed Todo', function (todo) {
+	      return _this.completedTodo(todo);
+	    });
+	    this.state.on('Delete Todo', function (todo) {
+	      return _this.deleteTodo(todo);
+	    });
+
+	    // dom events
+	    this.toggleListBTN.addEventListener('click', this.toggleList.bind(this));
+	    this.newTodoBTN.addEventListener('click', this.panel.open.bind(this.panel));
+
+	    // calling in my data
+	    this.state.get();
 	  }
 
+	  // =====================
+	  // todo list manegment
+	  // =====================
+
+	  // when the state returns all the todos
+
+
 	  _createClass(App, [{
-	    key: 'events',
-	    value: function events() {
-	      this.listBTN.addEventListener('click', this.changeList.bind(this));
-	      this.newBTN.addEventListener('click', this.panel.open.bind(this.panel));
-	      // TODO: when the new todo panel is opened we need to reload the upcoming todos list.
+	    key: 'allTodos',
+	    value: function allTodos(todos) {
+	      this.todos = todos;
+	      this.createList();
 	    }
 
-	    // List Functions
+	    //
 
 	  }, {
-	    key: 'changeList',
-	    value: function changeList() {
-	      var _this = this;
+	    key: 'toggleList',
+	    value: function toggleList() {
+	      var _this2 = this;
 
 	      var listClear = new Promise(function (resolve, reject) {
-	        setTimeout(resolve, _this.delay * _this.activeTodos.length);
+	        setTimeout(resolve, _this2.delay * _this2.activeTodos.length);
 	      });
-	      this.todosColor = (0, _helpers.pickColor)();
-	      this.upcomingList = !this.upcomingList;
-	      this.listBTN.innerHTML = this.upcomingList ? 'Completed Todos' : 'Upcoming Todos';
+	      this.color = (0, _helpers.pickColor)();
+	      this.displayUpcoming = !this.displayUpcoming;
+	      this.toggleListBTN.innerHTML = this.displayUpcoming ? 'Completed Todos' : 'Upcoming Todos';
 	      this.clearList();
 	      listClear.then(this.createList.bind(this));
 	    }
 	  }, {
 	    key: 'createList',
 	    value: function createList() {
-	      var _this2 = this;
+	      var _this3 = this;
 
-	      var todoType = this.upcomingList ? 'upcoming' : 'completed';
-	      (0, _helpers.getTodos)(todoType, function (todos) {
-	        return todos.map(function (todo) {
-	          return _this2.createTodo(todo);
-	        });
+	      var todos = this.todos.filter(function (todo) {
+	        return todo.completed != _this3.displayUpcoming;
+	      });
+	      todos.map(function (todoData) {
+	        return _this3.initTodo(todoData);
 	      });
 	    }
 	  }, {
 	    key: 'clearList',
 	    value: function clearList() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      this.activeTodos.reverse().map(function (todo) {
-	        return _this3.removeTodo(todo);
+	        return _this4.removeTodo(todo);
 	      });
 	    }
 	  }, {
 	    key: 'sortList',
 	    value: function sortList() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      this.activeTodos.sort(function (a, b) {
 	        return new Date(b.dueDate) - new Date(a.dueDate);
 	      });
 	      this.activeTodos.map(function (todo) {
-	        return _this4.listEL.removeChild(todo.div);
+	        return _this5.listEL.removeChild(todo.div);
 	      });
 	      this.activeTodos.map(function (todo) {
-	        return _this4.listEL.insertBefore(todo.div, _this4.listEL.firstChild);
+	        return _this5.listEL.insertBefore(todo.div, _this5.listEL.firstChild);
 	      });
 	    }
-	    // List Functions
 
-	    // Todo Functions
+	    // ========================
+	    // todo manegment
+	    // ========================
+
+	    // init todo with the todoData from server
 
 	  }, {
-	    key: 'createTodo',
-	    value: function createTodo(todo) {
-	      var newTodo = new _todo2.default(todo);
-	      newTodo.primaryAction = this.todoPrimaryAction.bind(this);
-	      newTodo.delete = this.todoDelete.bind(this);
-	      newTodo.edit = this.todoEdit.bind(this);
-	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [newTodo]);
-	      if (!newTodo.rendered) this.addTodo(newTodo);
+	    key: 'initTodo',
+	    value: function initTodo(data) {
+	      var todo = new _todo2.default(data);
+	      todo.primaryAction = this.todoPrimaryAction.bind(this);
+	      todo.edit = this.todoEditAction.bind(this);
+	      todo.delete = this.todoDeleteAction.bind(this);
+	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [todo]);
+	      if (!todo.rendered) this.addTodo(todo);
 	    }
+
+	    // adding the newly created todo to the DOM
+
 	  }, {
 	    key: 'addTodo',
 	    value: function addTodo(todo) {
 	      var delay = this.delay * this.activeTodos.indexOf(todo);
-	      var color = (0, _helpers.colorDarken)(this.todosColor, -(this.activeTodos.indexOf(todo) / 50));
+	      var color = (0, _helpers.colorDarken)(this.color, -(this.activeTodos.indexOf(todo) / 50));
 	      todo.div.setAttribute('style', ['color: ' + color]);
 	      this.listEL.insertBefore(todo.div, this.listEL.firstChild);
-
 	      todo.in(delay);
 	      todo.rendered = true;
 	    }
-	  }, {
-	    key: 'todoEdit',
-	    value: function todoEdit(todo) {
-	      this.panel.open(null, todo.title, todo.dueDate, todo.id);
-	    }
+
+	    // removing a todo from the DOM
+
 	  }, {
 	    key: 'removeTodo',
 	    value: function removeTodo(todo) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.delay * this.activeTodos.length;
 
 	      todo.out(delay);
 	      setTimeout(function () {
-	        _this5.listEL.removeChild(todo.div);
+	        _this6.listEL.removeChild(todo.div);
 	      }, delay + 300);
 	      todo.rendered = false;
 	      this.activeTodos = this.activeTodos.filter(function (aT) {
 	        return todo.id != aT.id;
 	      });
 	    }
+
+	    // updated todo
+
+	  }, {
+	    key: 'updateTodo',
+	    value: function updateTodo(todo) {
+	      var activeTodo = this.activeTodos.find(function (aT) {
+	        return aT.id == todo.id;
+	      });
+	      activeTodo.title = todo.title;
+	      activeTodo.dueDate = todo.due_date;
+	      activeTodo.refresh();
+	      this.sortList();
+	    }
+
+	    // new todo
+
+	  }, {
+	    key: 'newTodo',
+	    value: function newTodo(todo) {
+	      this.todos.push(todo);
+	      this.initTodo(todo);
+	      this.sortList();
+	    }
+
+	    // completed todo
+
+	  }, {
+	    key: 'completedTodo',
+	    value: function completedTodo(todo) {
+	      var activeTodo = this.activeTodos.find(function (dT) {
+	        return dT.id == todo.id;
+	      });
+	      var dataTodo = this.todos.find(function (dT) {
+	        return dT.id == todo.id;
+	      });
+	      activeTodo.completed = !activeTodo.completed;
+	      dataTodo.completed = !dataTodo.completed;
+	      this.removeTodo(activeTodo, this.delay);
+	    }
+
+	    // delete todo
+
+	  }, {
+	    key: 'deleteTodo',
+	    value: function deleteTodo(id) {
+	      var activeTodo = this.activeTodos.find(function (dT) {
+	        return dT.id == id;
+	      });
+	      this.todos = this.todos.filter(function (dT) {
+	        return dT.id != id;
+	      });
+	      this.removeTodo(activeTodo, this.delay);
+	    }
+
+	    // =====================
+	    // action manegment
+	    // =====================
+
 	  }, {
 	    key: 'todoPrimaryAction',
 	    value: function todoPrimaryAction(todo) {
-	      var _this6 = this;
-
-	      var action = todo.complete ? 'reset' : 'done';
-	      (0, _helpers.updateTodo)(action, '&id=' + todo.id, function (response) {
-	        var dt = _this6.activeTodos.find(function (dT) {
-	          return dT.id == response.id;
-	        });
-	        dt.complete = !dt.complete;
-	        _this6.removeTodo(dt, _this6.delay);
-	      });
+	      var todoData = {
+	        id: todo.id,
+	        title: todo.title,
+	        due_date: todo.dueDate,
+	        completed: !todo.completed
+	      };
+	      this.state.post('Completed Todo', todoData);
 	    }
 	  }, {
-	    key: 'todoDelete',
-	    value: function todoDelete(todo) {
-	      var _this7 = this;
-
-	      (0, _helpers.updateTodo)('delete', '&id=' + todo.id, function (id) {
-	        _this7.removeTodo(todo, _this7.delay);
-	      });
+	    key: 'todoEditAction',
+	    value: function todoEditAction(todo) {
+	      this.panel.open(null, todo.title, todo.dueDate, todo.id);
 	    }
 	  }, {
-	    key: 'updateTodo',
-	    value: function updateTodo(fields) {
-	      var _this8 = this;
-
-	      (0, _helpers.updateTodo)('edit', fields, function (todo) {
-	        var activeTodo = _this8.activeTodos.find(function (aT) {
-	          return aT.id == todo.id;
-	        });
-	        activeTodo.title = todo.title;
-	        activeTodo.dueDate = todo.due_date;
-	        activeTodo.refresh();
-	        _this8.sortList();
-	        _this8.panel.editing = false;
-	      });
+	    key: 'todoDeleteAction',
+	    value: function todoDeleteAction(todo) {
+	      var todoData = {
+	        id: todo.id,
+	        title: todo.title,
+	        due_date: todo.dueDate,
+	        completed: !todo.completed
+	      };
+	      this.state.delete('Delete Todo', todoData);
 	    }
 	  }, {
-	    key: 'newTodo',
-	    value: function newTodo(fields) {
-	      var _this9 = this;
-
-	      (0, _helpers.updateTodo)('create', fields, function (todo) {
-	        _this9.createTodo(todo);
-	        _this9.sortList();
-	      });
+	    key: 'panelSubmitAction',
+	    value: function panelSubmitAction(todo) {
+	      var message = todo.id == '' ? 'New Todo' : 'Updated Todo';
+	      var id = todo.id == '' ? null : todo.id;
+	      var todoData = {
+	        id: id,
+	        title: todo.title,
+	        due_date: todo.due_date,
+	        completed: todo.completed
+	      };
+	      this.state.post(message, todoData);
 	    }
-	    // Todo Functions
-
 	  }]);
 
 	  return App;
@@ -283,32 +375,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getTodos = getTodos;
-	exports.updateTodo = updateTodo;
 	exports.dbDate = dbDate;
 	exports.viewDate = viewDate;
 	exports.dateCompair = dateCompair;
 	exports.colorDarken = colorDarken;
 	exports.pickColor = pickColor;
-	function getTodos() {
-	  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'upcoming';
-	  var callback = arguments[1];
-
-	  fetch("?action=" + type).then(function (response) {
-	    return response.json();
-	  }).then(function (todos) {
-	    return callback(todos);
-	  });
-	}
-
-	function updateTodo(type, fields, callback) {
-	  fetch("?action=" + type + fields).then(function (response) {
-	    return response.json();
-	  }).then(function (todo) {
-	    return callback(todo);
-	  });
-	}
-
 	function dbDate(date) {
 	  var realDate = new Date(date);
 	  var year = realDate.getFullYear();
@@ -359,6 +430,385 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _events = __webpack_require__(4);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var State = function () {
+	  function State() {
+	    var ee = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _events.EventEmitter();
+
+	    _classCallCheck(this, State);
+
+	    this.ee = ee;
+	  }
+
+	  _createClass(State, [{
+	    key: 'on',
+	    value: function on(name, fn) {
+	      this.ee.on(name, fn);
+	    }
+	  }, {
+	    key: 'get',
+	    value: function get() {
+	      var options = { method: 'GET' };
+	      this.request('All Todos', options);
+	    }
+	  }, {
+	    key: 'post',
+	    value: function post(message, todo) {
+	      var body = new FormData();
+	      for (var i in todo) {
+	        body.append(i, todo[i]);
+	      }
+	      var options = { method: 'POST', body: body };
+	      this.request(message, options);
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete(message, todo) {
+	      var options = { method: 'DELETE', body: JSON.stringify(todo) };
+	      this.request(message, options);
+	    }
+	  }, {
+	    key: 'request',
+	    value: function request(message, options) {
+	      var _this = this;
+
+	      var request = new Request('/api/', options);
+	      fetch(request).then(function (response) {
+	        return response.json();
+	      }).then(function (todos) {
+	        _this.ee.emit(message, todos);
+	      });
+	    }
+	  }]);
+
+	  return State;
+	}();
+
+	exports.default = State;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	function EventEmitter() {
+	  this._events = this._events || {};
+	  this._maxListeners = this._maxListeners || undefined;
+	}
+	module.exports = EventEmitter;
+
+	// Backwards-compat with node 0.10.x
+	EventEmitter.EventEmitter = EventEmitter;
+
+	EventEmitter.prototype._events = undefined;
+	EventEmitter.prototype._maxListeners = undefined;
+
+	// By default EventEmitters will print a warning if more than 10 listeners are
+	// added to it. This is a useful default which helps finding memory leaks.
+	EventEmitter.defaultMaxListeners = 10;
+
+	// Obviously not all Emitters should be limited to 10. This function allows
+	// that to be increased. Set to zero for unlimited.
+	EventEmitter.prototype.setMaxListeners = function(n) {
+	  if (!isNumber(n) || n < 0 || isNaN(n))
+	    throw TypeError('n must be a positive number');
+	  this._maxListeners = n;
+	  return this;
+	};
+
+	EventEmitter.prototype.emit = function(type) {
+	  var er, handler, len, args, i, listeners;
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // If there is no 'error' event listener then throw.
+	  if (type === 'error') {
+	    if (!this._events.error ||
+	        (isObject(this._events.error) && !this._events.error.length)) {
+	      er = arguments[1];
+	      if (er instanceof Error) {
+	        throw er; // Unhandled 'error' event
+	      } else {
+	        // At least give some kind of context to the user
+	        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+	        err.context = er;
+	        throw err;
+	      }
+	    }
+	  }
+
+	  handler = this._events[type];
+
+	  if (isUndefined(handler))
+	    return false;
+
+	  if (isFunction(handler)) {
+	    switch (arguments.length) {
+	      // fast cases
+	      case 1:
+	        handler.call(this);
+	        break;
+	      case 2:
+	        handler.call(this, arguments[1]);
+	        break;
+	      case 3:
+	        handler.call(this, arguments[1], arguments[2]);
+	        break;
+	      // slower
+	      default:
+	        args = Array.prototype.slice.call(arguments, 1);
+	        handler.apply(this, args);
+	    }
+	  } else if (isObject(handler)) {
+	    args = Array.prototype.slice.call(arguments, 1);
+	    listeners = handler.slice();
+	    len = listeners.length;
+	    for (i = 0; i < len; i++)
+	      listeners[i].apply(this, args);
+	  }
+
+	  return true;
+	};
+
+	EventEmitter.prototype.addListener = function(type, listener) {
+	  var m;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // To avoid recursion in the case that type === "newListener"! Before
+	  // adding it to the listeners, first emit "newListener".
+	  if (this._events.newListener)
+	    this.emit('newListener', type,
+	              isFunction(listener.listener) ?
+	              listener.listener : listener);
+
+	  if (!this._events[type])
+	    // Optimize the case of one listener. Don't need the extra array object.
+	    this._events[type] = listener;
+	  else if (isObject(this._events[type]))
+	    // If we've already got an array, just append.
+	    this._events[type].push(listener);
+	  else
+	    // Adding the second element, need to change to array.
+	    this._events[type] = [this._events[type], listener];
+
+	  // Check for listener leak
+	  if (isObject(this._events[type]) && !this._events[type].warned) {
+	    if (!isUndefined(this._maxListeners)) {
+	      m = this._maxListeners;
+	    } else {
+	      m = EventEmitter.defaultMaxListeners;
+	    }
+
+	    if (m && m > 0 && this._events[type].length > m) {
+	      this._events[type].warned = true;
+	      console.error('(node) warning: possible EventEmitter memory ' +
+	                    'leak detected. %d listeners added. ' +
+	                    'Use emitter.setMaxListeners() to increase limit.',
+	                    this._events[type].length);
+	      if (typeof console.trace === 'function') {
+	        // not supported in IE 10
+	        console.trace();
+	      }
+	    }
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+	EventEmitter.prototype.once = function(type, listener) {
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  var fired = false;
+
+	  function g() {
+	    this.removeListener(type, g);
+
+	    if (!fired) {
+	      fired = true;
+	      listener.apply(this, arguments);
+	    }
+	  }
+
+	  g.listener = listener;
+	  this.on(type, g);
+
+	  return this;
+	};
+
+	// emits a 'removeListener' event iff the listener was removed
+	EventEmitter.prototype.removeListener = function(type, listener) {
+	  var list, position, length, i;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events || !this._events[type])
+	    return this;
+
+	  list = this._events[type];
+	  length = list.length;
+	  position = -1;
+
+	  if (list === listener ||
+	      (isFunction(list.listener) && list.listener === listener)) {
+	    delete this._events[type];
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+
+	  } else if (isObject(list)) {
+	    for (i = length; i-- > 0;) {
+	      if (list[i] === listener ||
+	          (list[i].listener && list[i].listener === listener)) {
+	        position = i;
+	        break;
+	      }
+	    }
+
+	    if (position < 0)
+	      return this;
+
+	    if (list.length === 1) {
+	      list.length = 0;
+	      delete this._events[type];
+	    } else {
+	      list.splice(position, 1);
+	    }
+
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.removeAllListeners = function(type) {
+	  var key, listeners;
+
+	  if (!this._events)
+	    return this;
+
+	  // not listening for removeListener, no need to emit
+	  if (!this._events.removeListener) {
+	    if (arguments.length === 0)
+	      this._events = {};
+	    else if (this._events[type])
+	      delete this._events[type];
+	    return this;
+	  }
+
+	  // emit removeListener for all listeners on all events
+	  if (arguments.length === 0) {
+	    for (key in this._events) {
+	      if (key === 'removeListener') continue;
+	      this.removeAllListeners(key);
+	    }
+	    this.removeAllListeners('removeListener');
+	    this._events = {};
+	    return this;
+	  }
+
+	  listeners = this._events[type];
+
+	  if (isFunction(listeners)) {
+	    this.removeListener(type, listeners);
+	  } else if (listeners) {
+	    // LIFO order
+	    while (listeners.length)
+	      this.removeListener(type, listeners[listeners.length - 1]);
+	  }
+	  delete this._events[type];
+
+	  return this;
+	};
+
+	EventEmitter.prototype.listeners = function(type) {
+	  var ret;
+	  if (!this._events || !this._events[type])
+	    ret = [];
+	  else if (isFunction(this._events[type]))
+	    ret = [this._events[type]];
+	  else
+	    ret = this._events[type].slice();
+	  return ret;
+	};
+
+	EventEmitter.prototype.listenerCount = function(type) {
+	  if (this._events) {
+	    var evlistener = this._events[type];
+
+	    if (isFunction(evlistener))
+	      return 1;
+	    else if (evlistener)
+	      return evlistener.length;
+	  }
+	  return 0;
+	};
+
+	EventEmitter.listenerCount = function(emitter, type) {
+	  return emitter.listenerCount(type);
+	};
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _helpers = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -372,7 +822,7 @@
 	    this.title = data.title;
 	    this.dueDate = data.due_date;
 	    this.overdue = (0, _helpers.dateCompair)(data.due_date);
-	    this.complete = data.complete;
+	    this.completed = data.completed;
 	    this.primaryAction = null;
 	    this.delete = null;
 	    this.edit = null;
@@ -396,7 +846,7 @@
 	        _this.primaryAction(_this);
 	      });
 
-	      if (this.complete === false) {
+	      if (this.completed === false) {
 	        this.deleteBTN.addEventListener('click', function () {
 	          _this.delete(_this);
 	        });
@@ -452,12 +902,12 @@
 	      // creating todo div
 	      todo.div = document.createElement('div');
 	      todo.div.setAttribute('style', ['color: #' + color]);
-	      todo.div.className = todo.complete === false ? 'todo js-todo-in' : 'todo complete js-todo-in';
+	      todo.div.className = todo.completed === false ? 'todo js-todo-in' : 'todo completed js-todo-in';
 	      todo.div.id = todo.id;
 	      todo.div.tabIndex = 0;
 
 	      var messageDiv = document.createElement('div');
-	      messageDiv.className = todo.overdue === true && todo.complete === false ? 'message message--urgent active' : 'message message--urgent';
+	      messageDiv.className = todo.overdue === true && todo.completed === false ? 'message message--urgent active' : 'message message--urgent';
 
 	      var messageText = document.createElement('p');
 	      messageText.innerHTML = 'This ToDo is OverDo!';
@@ -479,7 +929,7 @@
 	      title.innerHTML = todo.title;
 	      title.className = 'todo-info__title';
 
-	      if (todo.complete === false) {
+	      if (todo.completed === false) {
 	        todo.primaryBTN = document.createElement('button');
 	        todo.primaryBTN.innerHTML = 'Done';
 	        todo.primaryBTN.className = 'button button--primary button--large js-todo-complete';
@@ -520,7 +970,7 @@
 	exports.default = Todo;
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -537,84 +987,91 @@
 
 	var Panel = function () {
 	  function Panel() {
+	    var _this = this;
+
 	    _classCallCheck(this, Panel);
 
+	    // state
 	    this.active = false;
-	    this.editing = false;
-	    this.currentEditId = null;
-	    this.newTodo = null;
-	    this.updateTodo = null;
-	    this.errors = [];
-	    this.newTodoBTN = document.querySelector('.js-new-todo');
-	    this.sectionEL = document.querySelector('.todo-panel');
-	    this.form = this.sectionEL.querySelector('.todo-panel-form');
-	    this.submitBTN = this.form.querySelector('.js-submit');
-	    this.cancelBTN = this.form.querySelector('.js-cancel');
-	    this.dateGroup = this.form.querySelector('#todo-due-date');
-	    this.titleInput = this.form.querySelector('#todo-title');
-	    this.monthInput = this.form.querySelector('#todo-due-month');
-	    this.dayInput = this.form.querySelector('#todo-due-day');
-	    this.yearInput = this.form.querySelector('#todo-due-year');
-	    this.errorMessages = this.form.querySelectorAll('.message');
-	    this.events();
+
+	    // actions
+	    this.submitTodo;
+
+	    // form elements
+	    this.panelEL = document.querySelector('.todo-panel');
+	    this.form = this.panelEL.querySelector('#todo-panel-form');
+	    this.idINPUT = this.form.querySelector('[name=id]');
+	    this.titleINPUT = this.form.querySelector('[name=title]');
+	    this.dateGROUP = this.form.querySelector('[name=title]');
+	    this.dINPUT = this.form.querySelector('[name=day]');
+	    this.mINPUT = this.form.querySelector('[name=month]');
+	    this.yINPUT = this.form.querySelector('[name=year]');
+	    this.addBTN = this.form.querySelector('[data-panel-submit]');
+	    this.cancelBTN = this.form.querySelector('[data-panel-cancel]');
+	    this.err = this.form.querySelectorAll('.message');
+
+	    // events
+	    this.addBTN.addEventListener('click', function (e) {
+	      e.preventDefault();
+	      _this.prepTodo();
+	    });
+
+	    this.cancelBTN.addEventListener('click', function (e) {
+	      e.preventDefault();
+	      _this.close();
+	    });
+
+	    this.titleINPUT.addEventListener('blur', function (e) {
+	      _this.validateTitle();
+	    });
+
+	    this.yINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
+
+	    this.dINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
+
+	    this.mINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
 	  }
 
+	  // open panel
+
+
 	  _createClass(Panel, [{
-	    key: 'events',
-	    value: function events() {
-	      var _this = this;
-
-	      this.cancelBTN.addEventListener('click', function (e) {
-	        e.preventDefault();
-	        _this.close();
-	      });
-
-	      this.submitBTN.addEventListener('click', function (e) {
-	        e.preventDefault();
-	        _this.prepTodo();
-	      });
-
-	      this.titleInput.addEventListener('blur', function (e) {
-	        _this.validateTitle();
-	      });
-
-	      this.yearInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-
-	      this.dayInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-
-	      this.monthInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-	    }
-	  }, {
 	    key: 'open',
 	    value: function open(event) {
 	      var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 	      var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Date();
 	      var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-	      this.titleInput.value = title;
-	      this.currentEditId = id;
-	      this.editing = !!id;
+	      this.idINPUT.value = id;
+	      this.titleINPUT.value = title;
 	      this.setDate(date);
 	      this.active = true;
-	      this.sectionEL.classList.add('active');
-	      this.sectionEL.setAttribute('aria-hidden', false);
-	      this.form.focus();
+	      this.panelEL.classList.add('active');
+	      this.panelEL.setAttribute('aria-hidden', false);
+	      this.titleINPUT.focus();
+	      this.addBTN.innerHTML = id == null ? 'Add' : 'Edit';
 	    }
+
+	    // close panel
+
 	  }, {
 	    key: 'close',
 	    value: function close() {
 	      this.active = false;
-	      this.sectionEL.classList.remove('active');
-	      this.sectionEL.setAttribute('aria-hidden', true);
+	      this.panelEL.classList.remove('active');
+	      this.panelEL.setAttribute('aria-hidden', true);
 	      this.form.reset();
-	      this.newTodoBTN.focus();
+	      this.resetErrors();
 	    }
+
+	    // setting date group
+
 	  }, {
 	    key: 'setDate',
 	    value: function setDate(date) {
@@ -626,50 +1083,62 @@
 	      if (dd < 10) dd = '0' + dd;
 	      if (mm < 10) mm = '0' + mm;
 
-	      this.monthInput.value = mm;
-	      this.dayInput.value = dd;
-	      this.yearInput.value = year;
+	      this.mINPUT.value = mm;
+	      this.dINPUT.value = dd;
+	      this.yINPUT.value = year;
 	    }
 	  }, {
 	    key: 'validateTitle',
 	    value: function validateTitle() {
-	      if (this.titleInput.value == '') {
-	        this.titleInput.classList.add('error');
-	        this.errorMessages[0].classList.add('active');
+	      if (this.titleINPUT.value == '') {
+	        this.titleINPUT.classList.add('error');
+	        this.err[0].classList.add('active');
 	        return false;
 	      } else {
-	        this.titleInput.classList.remove('error');
-	        this.errorMessages[0].classList.remove('active');
+	        this.titleINPUT.classList.remove('error');
+	        this.err[0].classList.remove('active');
 	        return true;
 	      }
 	    }
 	  }, {
-	    key: 'validateDueDate',
-	    value: function validateDueDate() {
-	      var dateValid = (0, _helpers.dateCompair)(this.monthInput.value + '/' + this.dayInput.value + '/' + this.yearInput.value);
-	      if (dateValid) {
-	        this.dateGroup.classList.add('error');
-	        this.errorMessages[1].classList.add('active');
+	    key: 'validateDate',
+	    value: function validateDate() {
+	      var valid = (0, _helpers.dateCompair)(this.mINPUT.value + '/' + this.dINPUT.value + '/' + this.yINPUT.value);
+	      if (valid) {
+	        this.dateGROUP.classList.add('error');
+	        this.err[1].classList.add('active');
 	        return false;
 	      } else {
-	        this.dateGroup.classList.remove('error');
-	        this.errorMessages[1].classList.remove('active');
+	        this.dateGROUP.classList.remove('error');
+	        this.err[1].classList.remove('active');
 	        return true;
 	      }
 	    }
+	  }, {
+	    key: 'resetErrors',
+	    value: function resetErrors() {
+	      this.titleINPUT.classList.remove('active');
+	      this.dateGROUP.classList.remove('active');
+	      this.err.forEach(function (err) {
+	        return err.classList.remove('active');
+	      });
+	    }
+
+	    // preping todo for server
+
 	  }, {
 	    key: 'prepTodo',
 	    value: function prepTodo() {
-	      var title = encodeURIComponent(this.titleInput.value);
-	      var date = this.yearInput.value + '-' + this.monthInput.value + '-' + this.dayInput.value;
-	      var id = this.currentEditId != null ? '&id=' + this.currentEditId : '';
-	      var fields = '&title=' + title + '&due_date=' + date + id;
-	      if (this.validateTitle() && this.validateDueDate()) {
-	        if (this.editing) {
-	          this.updateTodo(fields);
-	        } else {
-	          this.newTodo(fields);
-	        }
+	      var date = this.yINPUT.value + '-' + this.mINPUT.value + '-' + this.dINPUT.value;
+	      var todo = {
+	        id: this.idINPUT.value,
+	        title: this.titleINPUT.value,
+	        due_date: date,
+	        completed: false
+	      };
+
+	      if (this.validateTitle() && this.validateDate()) {
+	        this.submitTodo(todo);
 	        this.close();
 	      }
 	    }

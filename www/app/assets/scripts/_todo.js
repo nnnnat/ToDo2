@@ -7,7 +7,7 @@ class Todo {
     this.title = data.title;
     this.dueDate = data.due_date;
     this.overdue = dateCompair(data.due_date);
-    this.complete = data.complete;
+    this.completed = data.completed;
     this.primaryAction = null;
     this.delete = null;
     this.edit = null;
@@ -27,7 +27,7 @@ class Todo {
       this.primaryAction(this);
     });
 
-    if (this.complete === false) {
+    if (this.completed === false) {
       this.deleteBTN.addEventListener('click', () => {
         this.delete(this);
       });
@@ -78,12 +78,12 @@ class Todo {
     // creating todo div
     todo.div = document.createElement('div');
     todo.div.setAttribute('style', [`color: #${color}`])
-    todo.div.className = (todo.complete === false) ? `todo js-todo-in` : `todo complete js-todo-in`;
+    todo.div.className = (todo.completed === false) ? `todo js-todo-in` : `todo completed js-todo-in`;
     todo.div.id = todo.id;
     todo.div.tabIndex = 0;
 
     let messageDiv = document.createElement('div');
-    messageDiv.className = (todo.overdue === true && todo.complete === false) ? 'message message--urgent active' : 'message message--urgent';
+    messageDiv.className = (todo.overdue === true && todo.completed === false) ? 'message message--urgent active' : 'message message--urgent';
 
     let messageText = document.createElement('p');
     messageText.innerHTML = 'This ToDo is OverDo!';
@@ -105,7 +105,7 @@ class Todo {
     title.innerHTML = todo.title;
     title.className = 'todo-info__title';
 
-    if(todo.complete === false) {
+    if(todo.completed === false) {
       todo.primaryBTN = document.createElement('button');
       todo.primaryBTN.innerHTML = 'Done';
       todo.primaryBTN.className = 'button button--primary button--large js-todo-complete';
