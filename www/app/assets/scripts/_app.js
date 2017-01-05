@@ -1,62 +1,67 @@
-import { getTodos, updateTodo, pickColor, colorDarken, dateCompair } from './_helpers';
+import { pickColor, colorDarken, dateCompair } from './_helpers';
 import State from './_state';
 import Todo from './_todo';
-import Panel from './_todo-panel';
+import Panel from './_panel';
 
 class App {
   constructor() {
+    // state
     this.state = new State();
+    this.todos = [];
     this.activeTodos = [];
-    this.upcomingList = true;
-    this.listEL = document.querySelector('#todo-list');
-    this.listBTN = document.querySelector('.js-load-completed-todo');
-    this.newBTN = document.querySelector('.js-new-todo');
-    this.delay = 100;
-    this.todosColor = pickColor();
+    this.displayUpcoming = true;
+
+    // dom
     this.panel = new Panel();
-    this.panel.newTodo = this.newTodo.bind(this);
-    this.panel.updateTodo = this.updateTodo.bind(this);
-    this.events();
+    this.panel.submitTodo = this.panelSubmitAction.bind(this);
+    this.listEL = document.querySelector('#todo-list');
+    this.toggleListBTN = document.querySelector('[data-toggle-list]');
+    this.newTodoBTN = document.querySelector('[data-new-todo]');
+
+    // animation & colors
+    this.delay = 100;
+    this.color = pickColor();
+
+    // state events
+    this.state.on('All Todos', this.allTodos.bind(this));
+    this.state.on('Updated Todo', todo => this.updateTodo(todo));
+    this.state.on('New Todo', todo => this.newTodo(todo));
+    this.state.on('Completed Todo', todo => this.completedTodo(todo));
+    this.state.on('Delete Todo', todo => this.deleteTodo(todo));
+
+    // dom events
+    this.toggleListBTN.addEventListener('click', this.toggleList.bind(this));
+    this.newTodoBTN.addEventListener('click', this.panel.open.bind(this.panel));
+
+    // calling in my data
+    this.state.get();
+  }
+
+  // =====================
+  // todo list manegment
+  // =====================
+
+  // when the state returns all the todos
+  allTodos(todos) {
+    this.todos = todos;
     this.createList();
-    this.state.on('All Todos', todos => todos.map(todo => this.createTodo(todo)));
-    this.state.on('New Todo', todo => {
-      this.createTodo(todo);
-      this.sortList();
-    });
-    this.state.on('Updated Todo', todo => {
-      let activeTodo = this.activeTodos.find(aT => aT.id == todo.id);
-      activeTodo.title = todo.title;
-      activeTodo.dueDate = todo.due_date;
-      activeTodo.refresh();
-      this.sortList();
-      this.panel.editing = false;
-    });
-    this.state.on('Delete Todo', todo => console.log(todo));//this.removeTodo(todo, this.delay));
-
   }
 
-  events() {
-    this.listBTN.addEventListener('click', this.changeList.bind(this));
-    this.newBTN.addEventListener('click', this.panel.open.bind(this.panel));
-    // TODO: when the new todo panel is opened we need to reload the upcoming todos list.
-  }
-
-  // List Functions
-  changeList() {
+  //
+  toggleList() {
     let listClear = new Promise((resolve, reject) => {
       setTimeout(resolve, this.delay * this.activeTodos.length );
     });
-    this.todosColor = pickColor();
-    this.upcomingList = !this.upcomingList;
-    this.listBTN.innerHTML = (this.upcomingList) ? 'Completed Todos' : 'Upcoming Todos';
+    this.color = pickColor();
+    this.displayUpcoming = !this.displayUpcoming;
+    this.toggleListBTN.innerHTML = (this.displayUpcoming) ? 'Completed Todos' : 'Upcoming Todos';
     this.clearList();
     listClear.then(this.createList.bind(this));
   }
 
   createList() {
-    //const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
-    //getTodos('all', todos => todos.map(todo => this.createTodo(todo)));
-    this.state.get();
+    const todos = this.todos.filter(todo => todo.completed != this.displayUpcoming);
+    todos.map(todoData => this.initTodo(todoData));
   }
 
   clearList() {
@@ -68,32 +73,32 @@ class App {
     this.activeTodos.map(todo => this.listEL.removeChild(todo.div));
     this.activeTodos.map(todo => this.listEL.insertBefore(todo.div, this.listEL.firstChild));
   }
-  // List Functions
 
-  // Todo Functions
-  createTodo(todo) {
-    const newTodo = new Todo(todo);
-    newTodo.primaryAction = this.todoPrimaryAction.bind(this);
-    newTodo.delete = this.todoDelete.bind(this);
-    newTodo.edit = this.todoEdit.bind(this);
-    this.activeTodos = [...this.activeTodos, newTodo ];
-    if (!newTodo.rendered) this.addTodo(newTodo);
+  // ========================
+  // todo manegment
+  // ========================
+
+  // init todo with the todoData from server
+  initTodo(data) {
+    const todo = new Todo(data);
+    todo.primaryAction = this.todoPrimaryAction.bind(this);
+    todo.edit = this.todoEditAction.bind(this);
+    todo.delete = this.todoDeleteAction.bind(this);
+    this.activeTodos = [...this.activeTodos, todo ];
+    if (!todo.rendered) this.addTodo(todo);
   }
 
+  // adding the newly created todo to the DOM
   addTodo(todo) {
     const delay = this.delay * this.activeTodos.indexOf(todo);
-    const color = colorDarken(this.todosColor, -(this.activeTodos.indexOf(todo)/50));
+    const color = colorDarken(this.color, -(this.activeTodos.indexOf(todo)/50));
     todo.div.setAttribute('style',[`color: ${color}`]);
     this.listEL.insertBefore(todo.div, this.listEL.firstChild);
-
     todo.in(delay);
     todo.rendered = true;
   }
 
-  todoEdit(todo) {
-    this.panel.open(null, todo.title, todo.dueDate, todo.id);
-  }
-
+  // removing a todo from the DOM
   removeTodo(todo, delay = this.delay * this.activeTodos.length) {
     todo.out(delay);
     setTimeout(() => {this.listEL.removeChild(todo.div)}, delay + 300);
@@ -101,28 +106,76 @@ class App {
     this.activeTodos = this.activeTodos.filter(aT => todo.id != aT.id);
   }
 
-  todoPrimaryAction(todo) {
-    const action = (todo.complete) ? 'reset' : 'done';
-    updateTodo(action, `&id=${todo.id}`, response => {
-      let dt = this.activeTodos.find(dT => dT.id == response.id);
-      dt.complete = !dt.complete;
-      this.removeTodo(dt, this.delay);
-    })
-  }
-
-  todoDelete(todo) {
-    console.log(todo);
-    this.state.post('Delete Todo', todo);
-  }
-
+  // updated todo
   updateTodo(todo) {
-    this.state.post('Update Todo', todo);
+    let activeTodo = this.activeTodos.find(aT => aT.id == todo.id);
+    activeTodo.title = todo.title;
+    activeTodo.dueDate = todo.due_date;
+    activeTodo.refresh();
+    this.sortList();
   }
 
+  // new todo
   newTodo(todo) {
-    this.state.post('New Todo', todo);
+    this.todos.push(todo);
+    this.initTodo(todo);
+    this.sortList();
   }
-  // Todo Functions
+
+  // completed todo
+  completedTodo(todo) {
+    let activeTodo = this.activeTodos.find(dT => dT.id == todo.id);
+    let dataTodo = this.todos.find(dT => dT.id == todo.id);
+    activeTodo.completed = !activeTodo.completed;
+    dataTodo.completed = !dataTodo.completed;
+    this.removeTodo(activeTodo, this.delay);
+  }
+
+  // delete todo
+  deleteTodo(id) {
+    let activeTodo = this.activeTodos.find(dT => dT.id == id);
+    this.todos = this.todos.filter(dT => dT.id != id);
+    this.removeTodo(activeTodo, this.delay);
+  }
+
+  // =====================
+  // action manegment
+  // =====================
+  todoPrimaryAction(todo) {
+    const todoData = {
+      id: todo.id,
+      title: todo.title,
+      due_date: todo.dueDate,
+      completed: !todo.completed
+    }
+    this.state.post('Completed Todo', todoData);
+  }
+
+  todoEditAction(todo) {
+    this.panel.open(null, todo.title, todo.dueDate, todo.id);
+  }
+
+  todoDeleteAction(todo) {
+    const todoData = {
+      id: todo.id,
+      title: todo.title,
+      due_date: todo.dueDate,
+      completed: !todo.completed
+    }
+    this.state.delete('Delete Todo', todoData);
+  }
+
+  panelSubmitAction(todo) {
+    const message = (todo.id == '') ? 'New Todo' : 'Updated Todo';
+    const id = (todo.id == '') ? null : todo.id;
+    const todoData = {
+      id: id,
+      title: todo.title,
+      due_date: todo.due_date,
+      completed: todo.completed
+    };
+    this.state.post(message, todoData);
+  }
 }
 
 export default App;

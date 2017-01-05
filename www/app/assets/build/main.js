@@ -76,6 +76,8 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	//import Panel from './_todo-panel';
+
 
 	var _helpers = __webpack_require__(2);
 
@@ -87,9 +89,9 @@
 
 	var _todo2 = _interopRequireDefault(_todo);
 
-	var _todoPanel = __webpack_require__(6);
+	var _newPanel = __webpack_require__(6);
 
-	var _todoPanel2 = _interopRequireDefault(_todoPanel);
+	var _newPanel2 = _interopRequireDefault(_newPanel);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -110,20 +112,23 @@
 	    this.displayUpcoming = true;
 
 	    // dom
-	    this.panel = new _todoPanel2.default();
-	    this.panel.newTodo = this.panelSubmitAction.bind(this);
+	    this.panel = new _newPanel2.default();
+	    this.panel.submitTodo = this.panelSubmitAction.bind(this);
 	    this.listEL = document.querySelector('#todo-list');
 	    this.toggleListBTN = document.querySelector('[data-toggle-list]');
 	    this.newTodoBTN = document.querySelector('[data-new-todo]');
 
 	    // animation & colors
-	    this.delay = 200;
+	    this.delay = 100;
 	    this.color = (0, _helpers.pickColor)();
 
 	    // state events
 	    this.state.on('All Todos', this.allTodos.bind(this));
 	    this.state.on('Updated Todo', function (todo) {
-	      return _this.updatedTodo.bind(_this);
+	      return _this.updateTodo(todo);
+	    });
+	    this.state.on('New Todo', function (todo) {
+	      return _this.newTodo(todo);
 	    });
 	    this.state.on('Completed Todo', function (todo) {
 	      return _this.completedTodo(todo);
@@ -191,6 +196,21 @@
 	        return _this4.removeTodo(todo);
 	      });
 	    }
+	  }, {
+	    key: 'sortList',
+	    value: function sortList() {
+	      var _this5 = this;
+
+	      this.activeTodos.sort(function (a, b) {
+	        return new Date(b.dueDate) - new Date(a.dueDate);
+	      });
+	      this.activeTodos.map(function (todo) {
+	        return _this5.listEL.removeChild(todo.div);
+	      });
+	      this.activeTodos.map(function (todo) {
+	        return _this5.listEL.insertBefore(todo.div, _this5.listEL.firstChild);
+	      });
+	    }
 
 	    // ========================
 	    // todo manegment
@@ -206,7 +226,7 @@
 	      todo.edit = this.todoEditAction.bind(this);
 	      todo.delete = this.todoDeleteAction.bind(this);
 	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [todo]);
-	      this.addTodo(todo);
+	      if (!todo.rendered) this.addTodo(todo);
 	    }
 
 	    // adding the newly created todo to the DOM
@@ -227,13 +247,13 @@
 	  }, {
 	    key: 'removeTodo',
 	    value: function removeTodo(todo) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.delay * this.activeTodos.length;
 
 	      todo.out(delay);
 	      setTimeout(function () {
-	        _this5.listEL.removeChild(todo.div);
+	        _this6.listEL.removeChild(todo.div);
 	      }, delay + 300);
 	      todo.rendered = false;
 	      this.activeTodos = this.activeTodos.filter(function (aT) {
@@ -245,18 +265,25 @@
 
 	  }, {
 	    key: 'updateTodo',
-	    value: function updateTodo() {
+	    value: function updateTodo(todo) {
 	      var activeTodo = this.activeTodos.find(function (aT) {
 	        return aT.id == todo.id;
 	      });
 	      activeTodo.title = todo.title;
 	      activeTodo.dueDate = todo.due_date;
 	      activeTodo.refresh();
-	      //this.sortList();
-	      //this.panel.editing = false
+	      this.sortList();
 	    }
 
 	    // new todo
+
+	  }, {
+	    key: 'newTodo',
+	    value: function newTodo(todo) {
+	      this.todos.push(todo);
+	      this.initTodo(todo);
+	      this.sortList();
+	    }
 
 	    // completed todo
 
@@ -292,8 +319,6 @@
 	    // action manegment
 	    // =====================
 
-	    //
-
 	  }, {
 	    key: 'todoPrimaryAction',
 	    value: function todoPrimaryAction(todo) {
@@ -308,7 +333,7 @@
 	  }, {
 	    key: 'todoEditAction',
 	    value: function todoEditAction(todo) {
-	      console.log('edit action clicked!');
+	      this.panel.open(null, todo.title, todo.dueDate, todo.id);
 	    }
 	  }, {
 	    key: 'todoDeleteAction',
@@ -324,8 +349,15 @@
 	  }, {
 	    key: 'panelSubmitAction',
 	    value: function panelSubmitAction(todo) {
-	      console.log('panel submit');
-	      console.log(todo);
+	      var message = todo.id == '' ? 'New Todo' : 'Updated Todo';
+	      var id = todo.id == '' ? null : todo.id;
+	      var todoData = {
+	        id: id,
+	        title: todo.title,
+	        due_date: todo.due_date,
+	        completed: todo.completed
+	      };
+	      this.state.post(message, todoData);
 	    }
 	  }]);
 
@@ -955,86 +987,91 @@
 
 	var Panel = function () {
 	  function Panel() {
+	    var _this = this;
+
 	    _classCallCheck(this, Panel);
 
+	    // state
 	    this.active = false;
-	    this.editing = false;
-	    this.currentEditId = null;
-	    this.newTodo = null;
-	    this.updateTodo = null;
-	    this.errors = [];
-	    this.newTodoBTN = document.querySelector('.js-new-todo');
-	    this.sectionEL = document.querySelector('.todo-panel');
-	    this.form = this.sectionEL.querySelector('.todo-panel-form');
-	    this.idInput = this.form.querySelector('[name=id]');
-	    this.submitBTN = this.form.querySelector('.js-submit');
-	    this.cancelBTN = this.form.querySelector('.js-cancel');
-	    this.dateGroup = this.form.querySelector('#todo-due-date');
-	    this.titleInput = this.form.querySelector('#todo-title');
-	    this.monthInput = this.form.querySelector('#todo-due-month');
-	    this.dayInput = this.form.querySelector('#todo-due-day');
-	    this.yearInput = this.form.querySelector('#todo-due-year');
-	    this.errorMessages = this.form.querySelectorAll('.message');
-	    this.events();
+
+	    // actions
+	    this.submitTodo;
+
+	    // form elements
+	    this.panelEL = document.querySelector('.todo-panel');
+	    this.form = this.panelEL.querySelector('#todo-panel-form');
+	    this.idINPUT = this.form.querySelector('[name=id]');
+	    this.titleINPUT = this.form.querySelector('[name=title]');
+	    this.dateGROUP = this.form.querySelector('[name=title]');
+	    this.dINPUT = this.form.querySelector('[name=day]');
+	    this.mINPUT = this.form.querySelector('[name=month]');
+	    this.yINPUT = this.form.querySelector('[name=year]');
+	    this.addBTN = this.form.querySelector('[data-panel-submit]');
+	    this.cancelBTN = this.form.querySelector('[data-panel-cancel]');
+	    this.err = this.form.querySelectorAll('.message');
+
+	    // events
+	    this.addBTN.addEventListener('click', function (e) {
+	      e.preventDefault();
+	      _this.prepTodo();
+	    });
+
+	    this.cancelBTN.addEventListener('click', function (e) {
+	      e.preventDefault();
+	      _this.close();
+	    });
+
+	    this.titleINPUT.addEventListener('blur', function (e) {
+	      _this.validateTitle();
+	    });
+
+	    this.yINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
+
+	    this.dINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
+
+	    this.mINPUT.addEventListener('change', function (e) {
+	      _this.validateDate();
+	    });
 	  }
 
+	  // open panel
+
+
 	  _createClass(Panel, [{
-	    key: 'events',
-	    value: function events() {
-	      var _this = this;
-
-	      this.cancelBTN.addEventListener('click', function (e) {
-	        e.preventDefault();
-	        _this.close();
-	      });
-
-	      this.submitBTN.addEventListener('click', function (e) {
-	        e.preventDefault();
-	        _this.prepTodo();
-	      });
-
-	      this.titleInput.addEventListener('blur', function (e) {
-	        _this.validateTitle();
-	      });
-
-	      this.yearInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-
-	      this.dayInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-
-	      this.monthInput.addEventListener('change', function (e) {
-	        _this.validateDueDate();
-	      });
-	    }
-	  }, {
 	    key: 'open',
 	    value: function open(event) {
 	      var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 	      var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Date();
 	      var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-	      this.idInput.value = id;
-	      this.titleInput.value = title;
-	      this.currentEditId = id;
-	      this.editing = !!id;
+	      this.idINPUT.value = id;
+	      this.titleINPUT.value = title;
 	      this.setDate(date);
 	      this.active = true;
-	      this.sectionEL.classList.add('active');
-	      this.sectionEL.setAttribute('aria-hidden', false);
-	      this.form.focus();
+	      this.panelEL.classList.add('active');
+	      this.panelEL.setAttribute('aria-hidden', false);
+	      this.titleINPUT.focus();
+	      this.addBTN.innerHTML = id == null ? 'Add' : 'Edit';
 	    }
+
+	    // close panel
+
 	  }, {
 	    key: 'close',
 	    value: function close() {
 	      this.active = false;
-	      this.sectionEL.classList.remove('active');
-	      this.sectionEL.setAttribute('aria-hidden', true);
+	      this.panelEL.classList.remove('active');
+	      this.panelEL.setAttribute('aria-hidden', true);
 	      this.form.reset();
-	      this.newTodoBTN.focus();
+	      this.resetErrors();
 	    }
+
+	    // setting date group
+
 	  }, {
 	    key: 'setDate',
 	    value: function setDate(date) {
@@ -1046,51 +1083,62 @@
 	      if (dd < 10) dd = '0' + dd;
 	      if (mm < 10) mm = '0' + mm;
 
-	      this.monthInput.value = mm;
-	      this.dayInput.value = dd;
-	      this.yearInput.value = year;
+	      this.mINPUT.value = mm;
+	      this.dINPUT.value = dd;
+	      this.yINPUT.value = year;
 	    }
 	  }, {
 	    key: 'validateTitle',
 	    value: function validateTitle() {
-	      if (this.titleInput.value == '') {
-	        this.titleInput.classList.add('error');
-	        this.errorMessages[0].classList.add('active');
+	      if (this.titleINPUT.value == '') {
+	        this.titleINPUT.classList.add('error');
+	        this.err[0].classList.add('active');
 	        return false;
 	      } else {
-	        this.titleInput.classList.remove('error');
-	        this.errorMessages[0].classList.remove('active');
+	        this.titleINPUT.classList.remove('error');
+	        this.err[0].classList.remove('active');
 	        return true;
 	      }
 	    }
 	  }, {
-	    key: 'validateDueDate',
-	    value: function validateDueDate() {
-	      var dateValid = (0, _helpers.dateCompair)(this.monthInput.value + '/' + this.dayInput.value + '/' + this.yearInput.value);
-	      if (dateValid) {
-	        this.dateGroup.classList.add('error');
-	        this.errorMessages[1].classList.add('active');
+	    key: 'validateDate',
+	    value: function validateDate() {
+	      var valid = (0, _helpers.dateCompair)(this.mINPUT.value + '/' + this.dINPUT.value + '/' + this.yINPUT.value);
+	      if (valid) {
+	        this.dateGROUP.classList.add('error');
+	        this.err[1].classList.add('active');
 	        return false;
 	      } else {
-	        this.dateGroup.classList.remove('error');
-	        this.errorMessages[1].classList.remove('active');
+	        this.dateGROUP.classList.remove('error');
+	        this.err[1].classList.remove('active');
 	        return true;
 	      }
 	    }
+	  }, {
+	    key: 'resetErrors',
+	    value: function resetErrors() {
+	      this.titleINPUT.classList.remove('active');
+	      this.dateGROUP.classList.remove('active');
+	      this.err.forEach(function (err) {
+	        return err.classList.remove('active');
+	      });
+	    }
+
+	    // preping todo for server
+
 	  }, {
 	    key: 'prepTodo',
 	    value: function prepTodo() {
-	      var date = this.yearInput.value + '-' + this.monthInput.value + '-' + this.dayInput.value;
-	      var id = this.currentEditId != null ? '&id=' + this.currentEditId : '';
-	      //const fields = `&title=${title}&due_date=${date}${id}`;
+	      var date = this.yINPUT.value + '-' + this.mINPUT.value + '-' + this.dINPUT.value;
+	      var todo = {
+	        id: this.idINPUT.value,
+	        title: this.titleINPUT.value,
+	        due_date: date,
+	        completed: false
+	      };
 
-	      var todo = { id: null, title: this.titleInput.value, due_date: date, completed: false };
-	      if (this.validateTitle() && this.validateDueDate()) {
-	        if (this.editing) {
-	          this.updateTodo(todo);
-	        } else {
-	          this.newTodo(todo);
-	        }
+	      if (this.validateTitle() && this.validateDate()) {
+	        this.submitTodo(todo);
 	        this.close();
 	      }
 	    }
