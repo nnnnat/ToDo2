@@ -1,4 +1,4 @@
-export function getTodos(type = 'upcoming', callback) {
+export function getTodos(type = 'all', callback) {
   fetch(`?action=${type}`)
     .then(response => response.json())
     .then(todos => callback(todos));

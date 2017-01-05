@@ -52,7 +52,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var ready = false; // This is needed to prevent onreadystatechange being run twice
+	var ready = false;
 	document.onreadystatechange = function () {
 	  if (ready) {
 	    return;
@@ -60,6 +60,7 @@
 	  // interactive = DOMContentLoaded & complete = window.load
 	  if (document.readyState === 'interactive' || document.readyState === 'complete') {
 	    ready = true;
+
 	    window.app = new _app2.default();
 	  }
 	};
@@ -78,11 +79,15 @@
 
 	var _helpers = __webpack_require__(2);
 
-	var _todo = __webpack_require__(3);
+	var _state = __webpack_require__(3);
+
+	var _state2 = _interopRequireDefault(_state);
+
+	var _todo = __webpack_require__(5);
 
 	var _todo2 = _interopRequireDefault(_todo);
 
-	var _todoPanel = __webpack_require__(4);
+	var _todoPanel = __webpack_require__(6);
 
 	var _todoPanel2 = _interopRequireDefault(_todoPanel);
 
@@ -94,8 +99,11 @@
 
 	var App = function () {
 	  function App() {
+	    var _this = this;
+
 	    _classCallCheck(this, App);
 
+	    this.state = new _state2.default();
 	    this.activeTodos = [];
 	    this.upcomingList = true;
 	    this.listEL = document.querySelector('#todo-list');
@@ -108,6 +116,17 @@
 	    this.panel.updateTodo = this.updateTodo.bind(this);
 	    this.events();
 	    this.createList();
+	    this.state.on('All Todos', function (todos) {
+	      return todos.map(function (todo) {
+	        return _this.createTodo(todo);
+	      });
+	    });
+	    this.state.on('New Todo', function (todo) {
+	      return _this.createTodo(todo);
+	    });
+	    this.state.on('Updated Todo', function (todo) {
+	      return console.log(todo);
+	    });
 	  }
 
 	  _createClass(App, [{
@@ -123,10 +142,10 @@
 	  }, {
 	    key: 'changeList',
 	    value: function changeList() {
-	      var _this = this;
+	      var _this2 = this;
 
 	      var listClear = new Promise(function (resolve, reject) {
-	        setTimeout(resolve, _this.delay * _this.activeTodos.length);
+	        setTimeout(resolve, _this2.delay * _this2.activeTodos.length);
 	      });
 	      this.todosColor = (0, _helpers.pickColor)();
 	      this.upcomingList = !this.upcomingList;
@@ -137,14 +156,9 @@
 	  }, {
 	    key: 'createList',
 	    value: function createList() {
-	      var _this2 = this;
-
-	      var todoType = this.upcomingList ? 'upcoming' : 'completed';
-	      (0, _helpers.getTodos)(todoType, function (todos) {
-	        return todos.map(function (todo) {
-	          return _this2.createTodo(todo);
-	        });
-	      });
+	      //const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
+	      //getTodos('all', todos => todos.map(todo => this.createTodo(todo)));
+	      this.state.get();
 	    }
 	  }, {
 	    key: 'clearList',
@@ -258,12 +272,11 @@
 	  }, {
 	    key: 'newTodo',
 	    value: function newTodo(fields) {
-	      var _this9 = this;
-
-	      (0, _helpers.updateTodo)('create', fields, function (todo) {
-	        _this9.createTodo(todo);
-	        _this9.sortList();
-	      });
+	      console.log(fields);
+	      // updateTodo('create', fields, todo => {
+	      //   this.createTodo(todo);
+	      //   this.sortList();
+	      // });
 	    }
 	    // Todo Functions
 
@@ -291,7 +304,7 @@
 	exports.colorDarken = colorDarken;
 	exports.pickColor = pickColor;
 	function getTodos() {
-	  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'upcoming';
+	  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'all';
 	  var callback = arguments[1];
 
 	  fetch("?action=" + type).then(function (response) {
@@ -359,6 +372,388 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _events = __webpack_require__(4);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var State = function () {
+	  function State() {
+	    var ee = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _events.EventEmitter();
+
+	    _classCallCheck(this, State);
+
+	    this.todos = [];
+	    this.activeTodos = [];
+	    this.callback = null;
+	    this.ee = ee;
+	  }
+
+	  _createClass(State, [{
+	    key: 'on',
+	    value: function on(name, fn) {
+	      this.ee.on(name, fn);
+	    }
+	  }, {
+	    key: 'get',
+	    value: function get() {
+	      var options = { method: 'GET' };
+	      this.request('All Todos', options);
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(todo) {
+	      var body = new FormData();
+	      for (var i in todo) {
+	        body.append(i, todo[i]);
+	      }
+	      var options = { method: 'POST', body: body };
+	      this.request(options);
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete(todo) {
+	      var options = { method: 'DELETE', body: JSON.stringify(todo) };
+	      this.request(options);
+	    }
+	  }, {
+	    key: 'request',
+	    value: function request(message, options) {
+	      var _this = this;
+
+	      var request = new Request('/api/', options);
+	      fetch(request).then(function (response) {
+	        return response.json();
+	      }).then(function (todos) {
+	        _this.ee.emit(message, todos);
+	      });
+	    }
+	  }]);
+
+	  return State;
+	}();
+
+	exports.default = State;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	function EventEmitter() {
+	  this._events = this._events || {};
+	  this._maxListeners = this._maxListeners || undefined;
+	}
+	module.exports = EventEmitter;
+
+	// Backwards-compat with node 0.10.x
+	EventEmitter.EventEmitter = EventEmitter;
+
+	EventEmitter.prototype._events = undefined;
+	EventEmitter.prototype._maxListeners = undefined;
+
+	// By default EventEmitters will print a warning if more than 10 listeners are
+	// added to it. This is a useful default which helps finding memory leaks.
+	EventEmitter.defaultMaxListeners = 10;
+
+	// Obviously not all Emitters should be limited to 10. This function allows
+	// that to be increased. Set to zero for unlimited.
+	EventEmitter.prototype.setMaxListeners = function(n) {
+	  if (!isNumber(n) || n < 0 || isNaN(n))
+	    throw TypeError('n must be a positive number');
+	  this._maxListeners = n;
+	  return this;
+	};
+
+	EventEmitter.prototype.emit = function(type) {
+	  var er, handler, len, args, i, listeners;
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // If there is no 'error' event listener then throw.
+	  if (type === 'error') {
+	    if (!this._events.error ||
+	        (isObject(this._events.error) && !this._events.error.length)) {
+	      er = arguments[1];
+	      if (er instanceof Error) {
+	        throw er; // Unhandled 'error' event
+	      } else {
+	        // At least give some kind of context to the user
+	        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+	        err.context = er;
+	        throw err;
+	      }
+	    }
+	  }
+
+	  handler = this._events[type];
+
+	  if (isUndefined(handler))
+	    return false;
+
+	  if (isFunction(handler)) {
+	    switch (arguments.length) {
+	      // fast cases
+	      case 1:
+	        handler.call(this);
+	        break;
+	      case 2:
+	        handler.call(this, arguments[1]);
+	        break;
+	      case 3:
+	        handler.call(this, arguments[1], arguments[2]);
+	        break;
+	      // slower
+	      default:
+	        args = Array.prototype.slice.call(arguments, 1);
+	        handler.apply(this, args);
+	    }
+	  } else if (isObject(handler)) {
+	    args = Array.prototype.slice.call(arguments, 1);
+	    listeners = handler.slice();
+	    len = listeners.length;
+	    for (i = 0; i < len; i++)
+	      listeners[i].apply(this, args);
+	  }
+
+	  return true;
+	};
+
+	EventEmitter.prototype.addListener = function(type, listener) {
+	  var m;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // To avoid recursion in the case that type === "newListener"! Before
+	  // adding it to the listeners, first emit "newListener".
+	  if (this._events.newListener)
+	    this.emit('newListener', type,
+	              isFunction(listener.listener) ?
+	              listener.listener : listener);
+
+	  if (!this._events[type])
+	    // Optimize the case of one listener. Don't need the extra array object.
+	    this._events[type] = listener;
+	  else if (isObject(this._events[type]))
+	    // If we've already got an array, just append.
+	    this._events[type].push(listener);
+	  else
+	    // Adding the second element, need to change to array.
+	    this._events[type] = [this._events[type], listener];
+
+	  // Check for listener leak
+	  if (isObject(this._events[type]) && !this._events[type].warned) {
+	    if (!isUndefined(this._maxListeners)) {
+	      m = this._maxListeners;
+	    } else {
+	      m = EventEmitter.defaultMaxListeners;
+	    }
+
+	    if (m && m > 0 && this._events[type].length > m) {
+	      this._events[type].warned = true;
+	      console.error('(node) warning: possible EventEmitter memory ' +
+	                    'leak detected. %d listeners added. ' +
+	                    'Use emitter.setMaxListeners() to increase limit.',
+	                    this._events[type].length);
+	      if (typeof console.trace === 'function') {
+	        // not supported in IE 10
+	        console.trace();
+	      }
+	    }
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+	EventEmitter.prototype.once = function(type, listener) {
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  var fired = false;
+
+	  function g() {
+	    this.removeListener(type, g);
+
+	    if (!fired) {
+	      fired = true;
+	      listener.apply(this, arguments);
+	    }
+	  }
+
+	  g.listener = listener;
+	  this.on(type, g);
+
+	  return this;
+	};
+
+	// emits a 'removeListener' event iff the listener was removed
+	EventEmitter.prototype.removeListener = function(type, listener) {
+	  var list, position, length, i;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events || !this._events[type])
+	    return this;
+
+	  list = this._events[type];
+	  length = list.length;
+	  position = -1;
+
+	  if (list === listener ||
+	      (isFunction(list.listener) && list.listener === listener)) {
+	    delete this._events[type];
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+
+	  } else if (isObject(list)) {
+	    for (i = length; i-- > 0;) {
+	      if (list[i] === listener ||
+	          (list[i].listener && list[i].listener === listener)) {
+	        position = i;
+	        break;
+	      }
+	    }
+
+	    if (position < 0)
+	      return this;
+
+	    if (list.length === 1) {
+	      list.length = 0;
+	      delete this._events[type];
+	    } else {
+	      list.splice(position, 1);
+	    }
+
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.removeAllListeners = function(type) {
+	  var key, listeners;
+
+	  if (!this._events)
+	    return this;
+
+	  // not listening for removeListener, no need to emit
+	  if (!this._events.removeListener) {
+	    if (arguments.length === 0)
+	      this._events = {};
+	    else if (this._events[type])
+	      delete this._events[type];
+	    return this;
+	  }
+
+	  // emit removeListener for all listeners on all events
+	  if (arguments.length === 0) {
+	    for (key in this._events) {
+	      if (key === 'removeListener') continue;
+	      this.removeAllListeners(key);
+	    }
+	    this.removeAllListeners('removeListener');
+	    this._events = {};
+	    return this;
+	  }
+
+	  listeners = this._events[type];
+
+	  if (isFunction(listeners)) {
+	    this.removeListener(type, listeners);
+	  } else if (listeners) {
+	    // LIFO order
+	    while (listeners.length)
+	      this.removeListener(type, listeners[listeners.length - 1]);
+	  }
+	  delete this._events[type];
+
+	  return this;
+	};
+
+	EventEmitter.prototype.listeners = function(type) {
+	  var ret;
+	  if (!this._events || !this._events[type])
+	    ret = [];
+	  else if (isFunction(this._events[type]))
+	    ret = [this._events[type]];
+	  else
+	    ret = this._events[type].slice();
+	  return ret;
+	};
+
+	EventEmitter.prototype.listenerCount = function(type) {
+	  if (this._events) {
+	    var evlistener = this._events[type];
+
+	    if (isFunction(evlistener))
+	      return 1;
+	    else if (evlistener)
+	      return evlistener.length;
+	  }
+	  return 0;
+	};
+
+	EventEmitter.listenerCount = function(emitter, type) {
+	  return emitter.listenerCount(type);
+	};
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _helpers = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -372,7 +767,7 @@
 	    this.title = data.title;
 	    this.dueDate = data.due_date;
 	    this.overdue = (0, _helpers.dateCompair)(data.due_date);
-	    this.complete = data.complete;
+	    this.completed = data.completed;
 	    this.primaryAction = null;
 	    this.delete = null;
 	    this.edit = null;
@@ -396,7 +791,7 @@
 	        _this.primaryAction(_this);
 	      });
 
-	      if (this.complete === false) {
+	      if (this.completed === false) {
 	        this.deleteBTN.addEventListener('click', function () {
 	          _this.delete(_this);
 	        });
@@ -452,12 +847,12 @@
 	      // creating todo div
 	      todo.div = document.createElement('div');
 	      todo.div.setAttribute('style', ['color: #' + color]);
-	      todo.div.className = todo.complete === false ? 'todo js-todo-in' : 'todo complete js-todo-in';
+	      todo.div.className = todo.completed === false ? 'todo js-todo-in' : 'todo completed js-todo-in';
 	      todo.div.id = todo.id;
 	      todo.div.tabIndex = 0;
 
 	      var messageDiv = document.createElement('div');
-	      messageDiv.className = todo.overdue === true && todo.complete === false ? 'message message--urgent active' : 'message message--urgent';
+	      messageDiv.className = todo.overdue === true && todo.completed === false ? 'message message--urgent active' : 'message message--urgent';
 
 	      var messageText = document.createElement('p');
 	      messageText.innerHTML = 'This ToDo is OverDo!';
@@ -479,7 +874,9 @@
 	      title.innerHTML = todo.title;
 	      title.className = 'todo-info__title';
 
-	      if (todo.complete === false) {
+	      console.log(todo);
+
+	      if (todo.completed === false) {
 	        todo.primaryBTN = document.createElement('button');
 	        todo.primaryBTN.innerHTML = 'Done';
 	        todo.primaryBTN.className = 'button button--primary button--large js-todo-complete';
@@ -520,7 +917,7 @@
 	exports.default = Todo;
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -660,13 +1057,14 @@
 	  }, {
 	    key: 'prepTodo',
 	    value: function prepTodo() {
-	      var title = encodeURIComponent(this.titleInput.value);
 	      var date = this.yearInput.value + '-' + this.monthInput.value + '-' + this.dayInput.value;
 	      var id = this.currentEditId != null ? '&id=' + this.currentEditId : '';
 	      var fields = '&title=' + title + '&due_date=' + date + id;
+
+	      var todo = { id: null, title: this.titleInput.value, due_date: date, completed: false };
 	      if (this.validateTitle() && this.validateDueDate()) {
 	        if (this.editing) {
-	          this.updateTodo(fields);
+	          this.updateTodo(todo);
 	        } else {
 	          this.newTodo(fields);
 	        }

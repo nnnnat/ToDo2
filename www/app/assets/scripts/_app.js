@@ -1,9 +1,11 @@
 import { getTodos, updateTodo, pickColor, colorDarken, dateCompair } from './_helpers';
+import State from './_state';
 import Todo from './_todo';
 import Panel from './_todo-panel';
 
 class App {
   constructor() {
+    this.state = new State();
     this.activeTodos = [];
     this.upcomingList = true;
     this.listEL = document.querySelector('#todo-list');
@@ -16,6 +18,10 @@ class App {
     this.panel.updateTodo = this.updateTodo.bind(this);
     this.events();
     this.createList();
+    this.state.on('All Todos', todos => todos.map(todo => this.createTodo(todo)));
+    this.state.on('New Todo', todo => this.createTodo(todo));
+    this.state.on('Updated Todo', todo => console.log(todo));
+
   }
 
   events() {
@@ -37,8 +43,9 @@ class App {
   }
 
   createList() {
-    const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
-    getTodos(todoType, todos => todos.map(todo => this.createTodo(todo)));
+    //const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
+    //getTodos('all', todos => todos.map(todo => this.createTodo(todo)));
+    this.state.get();
   }
 
   clearList() {
@@ -110,10 +117,11 @@ class App {
   }
 
   newTodo(fields) {
-    updateTodo('create', fields, todo => {
-      this.createTodo(todo);
-      this.sortList();
-    });
+    console.log(fields);
+    // updateTodo('create', fields, todo => {
+    //   this.createTodo(todo);
+    //   this.sortList();
+    // });
   }
   // Todo Functions
 }

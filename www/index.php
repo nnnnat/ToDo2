@@ -10,12 +10,11 @@
 
   require_once APP.'database.php'; // loading Database class
 
-  if (isset($_GET['action'])) { // if url has an /?action={action}
-    $action = $_GET['action']; // get passed action
-    require_once APP.'routes.php'; // loading routes
-  } else {
-    $action = 'index'; // set action to index and load the app markup, this should only run on first load
-    require_once APP.'views.php'; // laoding in views
-  }
+  $uri = $_SERVER['REQUEST_URI'];
 
+  if ($uri === '/') {
+    require_once APP.'views.php';
+  } else {
+    require_once APP.'routes.php';
+  }
 ?>

@@ -14,7 +14,7 @@ You'll need to make a database named ```todo2``` and create the todo's table. I'
 
 After you've created the ```todo2``` database run this query to create the todo's table
 ```
-CREATE TABLE todo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), due_date DATE, created_date DATE, overdue INT NOT NULL, completed INT NOT NULL)
+CREATE TABLE todo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), due_date DATE, completed INT NOT NULL)
 ```
 ### Javascript & SCSS
 
