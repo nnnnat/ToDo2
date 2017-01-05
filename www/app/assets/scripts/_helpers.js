@@ -1,15 +1,3 @@
-export function getTodos(type = 'all', callback) {
-  fetch(`?action=${type}`)
-    .then(response => response.json())
-    .then(todos => callback(todos));
-}
-
-export function updateTodo(type, fields, callback) {
-  fetch(`?action=${type}${fields}`)
-    .then(response => response.json())
-    .then(todo => callback(todo));
-}
-
 export function dbDate(date) {
   const realDate = new Date(date);
   const year = realDate.getFullYear();

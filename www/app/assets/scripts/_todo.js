@@ -105,8 +105,6 @@ class Todo {
     title.innerHTML = todo.title;
     title.className = 'todo-info__title';
 
-    console.log(todo);
-
     if(todo.completed === false) {
       todo.primaryBTN = document.createElement('button');
       todo.primaryBTN.innerHTML = 'Done';

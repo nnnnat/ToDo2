@@ -2,9 +2,6 @@ import {EventEmitter} from 'events';
 
 class State {
   constructor(ee = new EventEmitter()) {
-    this.todos = [];
-    this.activeTodos = [];
-    this.callback = null;
     this.ee = ee;
   }
 

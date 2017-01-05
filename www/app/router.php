@@ -1,4 +1,5 @@
 <?php
+  $requestVerb = $_SERVER['REQUEST_METHOD'];
 
   function call($action) {
     require_once APP.'controllers.php';
@@ -7,13 +8,20 @@
     $controller->{ $action }();
   }
 
-  // controller actions
-  $controllers = array('todo' => ['all', 'completed', 'create', 'delete', 'done', 'edit', 'get', 'index', 'reset', 'upcoming']);
+  switch ($requestVerb) {
+    case 'GET':
+      call('all');
+      break;
+    case 'POST':
+      if ($_POST['id'] === 'null') {
 
-  if (in_array($action, $controllers['todo'])) {
-    call($action);
-  } else {
-    call('error');
+        call('new');
+      } else {
+        call('update');
+      }
+      break;
+    default:
+      call('delete');
+      break;
   }
-
 ?>

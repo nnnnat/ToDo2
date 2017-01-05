@@ -10,6 +10,7 @@ class Panel {
     this.newTodoBTN = document.querySelector('.js-new-todo');
     this.sectionEL = document.querySelector('.todo-panel');
     this.form = this.sectionEL.querySelector('.todo-panel-form');
+    this.idInput = this.form.querySelector('[name=id]');
     this.submitBTN = this.form.querySelector('.js-submit');
     this.cancelBTN = this.form.querySelector('.js-cancel');
     this.dateGroup = this.form.querySelector('#todo-due-date');
@@ -50,6 +51,7 @@ class Panel {
   }
 
   open(event, title = '', date = new Date(), id = null) {
+    this.idInput.value = id;
     this.titleInput.value = title;
     this.currentEditId = id;
     this.editing = !!(id);

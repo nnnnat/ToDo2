@@ -1,4 +1,4 @@
-import App from './_app';
+import App from './_new_app';
 
 let ready = false;
 document.onreadystatechange = () => {

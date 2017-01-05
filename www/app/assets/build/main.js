@@ -46,9 +46,9 @@
 
 	'use strict';
 
-	var _app = __webpack_require__(1);
+	var _new_app = __webpack_require__(1);
 
-	var _app2 = _interopRequireDefault(_app);
+	var _new_app2 = _interopRequireDefault(_new_app);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61,7 +61,7 @@
 	  if (document.readyState === 'interactive' || document.readyState === 'complete') {
 	    ready = true;
 
-	    window.app = new _app2.default();
+	    window.app = new _new_app2.default();
 	  }
 	};
 
@@ -103,128 +103,127 @@
 
 	    _classCallCheck(this, App);
 
+	    // state
 	    this.state = new _state2.default();
+	    this.todos = [];
 	    this.activeTodos = [];
-	    this.upcomingList = true;
-	    this.listEL = document.querySelector('#todo-list');
-	    this.listBTN = document.querySelector('.js-load-completed-todo');
-	    this.newBTN = document.querySelector('.js-new-todo');
-	    this.delay = 100;
-	    this.todosColor = (0, _helpers.pickColor)();
+	    this.displayUpcoming = true;
+
+	    // dom
 	    this.panel = new _todoPanel2.default();
-	    this.panel.newTodo = this.newTodo.bind(this);
-	    this.panel.updateTodo = this.updateTodo.bind(this);
-	    this.events();
-	    this.createList();
-	    this.state.on('All Todos', function (todos) {
-	      return todos.map(function (todo) {
-	        return _this.createTodo(todo);
-	      });
-	    });
-	    this.state.on('New Todo', function (todo) {
-	      _this.createTodo(todo);
-	      _this.sortList();
-	    });
+	    this.panel.newTodo = this.panelSubmitAction.bind(this);
+	    this.listEL = document.querySelector('#todo-list');
+	    this.toggleListBTN = document.querySelector('[data-toggle-list]');
+	    this.newTodoBTN = document.querySelector('[data-new-todo]');
+
+	    // animation & colors
+	    this.delay = 200;
+	    this.color = (0, _helpers.pickColor)();
+
+	    // state events
+	    this.state.on('All Todos', this.allTodos.bind(this));
 	    this.state.on('Updated Todo', function (todo) {
-	      var activeTodo = _this.activeTodos.find(function (aT) {
-	        return aT.id == todo.id;
-	      });
-	      activeTodo.title = todo.title;
-	      activeTodo.dueDate = todo.due_date;
-	      activeTodo.refresh();
-	      _this.sortList();
-	      _this.panel.editing = false;
+	      return _this.updatedTodo.bind(_this);
+	    });
+	    this.state.on('Completed Todo', function (todo) {
+	      return _this.completedTodo(todo);
 	    });
 	    this.state.on('Delete Todo', function (todo) {
-	      return _this.removeTodo(todo, _this.delay);
+	      return _this.deleteTodo(todo);
 	    });
+
+	    // dom events
+	    this.toggleListBTN.addEventListener('click', this.toggleList.bind(this));
+	    this.newTodoBTN.addEventListener('click', this.panel.open.bind(this.panel));
+
+	    // calling in my data
+	    this.state.get();
 	  }
 
+	  // =====================
+	  // todo list manegment
+	  // =====================
+
+	  // when the state returns all the todos
+
+
 	  _createClass(App, [{
-	    key: 'events',
-	    value: function events() {
-	      this.listBTN.addEventListener('click', this.changeList.bind(this));
-	      this.newBTN.addEventListener('click', this.panel.open.bind(this.panel));
-	      // TODO: when the new todo panel is opened we need to reload the upcoming todos list.
+	    key: 'allTodos',
+	    value: function allTodos(todos) {
+	      this.todos = todos;
+	      this.createList();
 	    }
 
-	    // List Functions
+	    //
 
 	  }, {
-	    key: 'changeList',
-	    value: function changeList() {
+	    key: 'toggleList',
+	    value: function toggleList() {
 	      var _this2 = this;
 
 	      var listClear = new Promise(function (resolve, reject) {
 	        setTimeout(resolve, _this2.delay * _this2.activeTodos.length);
 	      });
-	      this.todosColor = (0, _helpers.pickColor)();
-	      this.upcomingList = !this.upcomingList;
-	      this.listBTN.innerHTML = this.upcomingList ? 'Completed Todos' : 'Upcoming Todos';
+	      this.color = (0, _helpers.pickColor)();
+	      this.displayUpcoming = !this.displayUpcoming;
+	      this.toggleListBTN.innerHTML = this.displayUpcoming ? 'Completed Todos' : 'Upcoming Todos';
 	      this.clearList();
 	      listClear.then(this.createList.bind(this));
 	    }
 	  }, {
 	    key: 'createList',
 	    value: function createList() {
-	      //const todoType = (this.upcomingList) ? 'upcoming' : 'completed';
-	      //getTodos('all', todos => todos.map(todo => this.createTodo(todo)));
-	      this.state.get();
+	      var _this3 = this;
+
+	      var todos = this.todos.filter(function (todo) {
+	        return todo.completed != _this3.displayUpcoming;
+	      });
+	      todos.map(function (todoData) {
+	        return _this3.initTodo(todoData);
+	      });
 	    }
 	  }, {
 	    key: 'clearList',
 	    value: function clearList() {
-	      var _this3 = this;
-
-	      this.activeTodos.reverse().map(function (todo) {
-	        return _this3.removeTodo(todo);
-	      });
-	    }
-	  }, {
-	    key: 'sortList',
-	    value: function sortList() {
 	      var _this4 = this;
 
-	      this.activeTodos.sort(function (a, b) {
-	        return new Date(b.dueDate) - new Date(a.dueDate);
-	      });
-	      this.activeTodos.map(function (todo) {
-	        return _this4.listEL.removeChild(todo.div);
-	      });
-	      this.activeTodos.map(function (todo) {
-	        return _this4.listEL.insertBefore(todo.div, _this4.listEL.firstChild);
+	      this.activeTodos.reverse().map(function (todo) {
+	        return _this4.removeTodo(todo);
 	      });
 	    }
-	    // List Functions
 
-	    // Todo Functions
+	    // ========================
+	    // todo manegment
+	    // ========================
+
+	    // init todo with the todoData from server
 
 	  }, {
-	    key: 'createTodo',
-	    value: function createTodo(todo) {
-	      var newTodo = new _todo2.default(todo);
-	      newTodo.primaryAction = this.todoPrimaryAction.bind(this);
-	      newTodo.delete = this.todoDelete.bind(this);
-	      newTodo.edit = this.todoEdit.bind(this);
-	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [newTodo]);
-	      if (!newTodo.rendered) this.addTodo(newTodo);
+	    key: 'initTodo',
+	    value: function initTodo(data) {
+	      var todo = new _todo2.default(data);
+	      todo.primaryAction = this.todoPrimaryAction.bind(this);
+	      todo.edit = this.todoEditAction.bind(this);
+	      todo.delete = this.todoDeleteAction.bind(this);
+	      this.activeTodos = [].concat(_toConsumableArray(this.activeTodos), [todo]);
+	      this.addTodo(todo);
 	    }
+
+	    // adding the newly created todo to the DOM
+
 	  }, {
 	    key: 'addTodo',
 	    value: function addTodo(todo) {
 	      var delay = this.delay * this.activeTodos.indexOf(todo);
-	      var color = (0, _helpers.colorDarken)(this.todosColor, -(this.activeTodos.indexOf(todo) / 50));
+	      var color = (0, _helpers.colorDarken)(this.color, -(this.activeTodos.indexOf(todo) / 50));
 	      todo.div.setAttribute('style', ['color: ' + color]);
 	      this.listEL.insertBefore(todo.div, this.listEL.firstChild);
-
 	      todo.in(delay);
 	      todo.rendered = true;
 	    }
-	  }, {
-	    key: 'todoEdit',
-	    value: function todoEdit(todo) {
-	      this.panel.open(null, todo.title, todo.dueDate, todo.id);
-	    }
+
+	    // removing a todo from the DOM
+
 	  }, {
 	    key: 'removeTodo',
 	    value: function removeTodo(todo) {
@@ -241,37 +240,93 @@
 	        return todo.id != aT.id;
 	      });
 	    }
+
+	    // updated todo
+
+	  }, {
+	    key: 'updateTodo',
+	    value: function updateTodo() {
+	      var activeTodo = this.activeTodos.find(function (aT) {
+	        return aT.id == todo.id;
+	      });
+	      activeTodo.title = todo.title;
+	      activeTodo.dueDate = todo.due_date;
+	      activeTodo.refresh();
+	      //this.sortList();
+	      //this.panel.editing = false
+	    }
+
+	    // new todo
+
+	    // completed todo
+
+	  }, {
+	    key: 'completedTodo',
+	    value: function completedTodo(todo) {
+	      var activeTodo = this.activeTodos.find(function (dT) {
+	        return dT.id == todo.id;
+	      });
+	      var dataTodo = this.todos.find(function (dT) {
+	        return dT.id == todo.id;
+	      });
+	      activeTodo.completed = !activeTodo.completed;
+	      dataTodo.completed = !dataTodo.completed;
+	      this.removeTodo(activeTodo, this.delay);
+	    }
+
+	    // delete todo
+
+	  }, {
+	    key: 'deleteTodo',
+	    value: function deleteTodo(id) {
+	      var activeTodo = this.activeTodos.find(function (dT) {
+	        return dT.id == id;
+	      });
+	      this.todos = this.todos.filter(function (dT) {
+	        return dT.id != id;
+	      });
+	      this.removeTodo(activeTodo, this.delay);
+	    }
+
+	    // =====================
+	    // action manegment
+	    // =====================
+
+	    //
+
 	  }, {
 	    key: 'todoPrimaryAction',
 	    value: function todoPrimaryAction(todo) {
-	      var _this6 = this;
-
-	      var action = todo.complete ? 'reset' : 'done';
-	      (0, _helpers.updateTodo)(action, '&id=' + todo.id, function (response) {
-	        var dt = _this6.activeTodos.find(function (dT) {
-	          return dT.id == response.id;
-	        });
-	        dt.complete = !dt.complete;
-	        _this6.removeTodo(dt, _this6.delay);
-	      });
+	      var todoData = {
+	        id: todo.id,
+	        title: todo.title,
+	        due_date: todo.dueDate,
+	        completed: !todo.completed
+	      };
+	      this.state.post('Completed Todo', todoData);
 	    }
 	  }, {
-	    key: 'todoDelete',
-	    value: function todoDelete(todo) {
-	      this.state.post('Delete Todo', todo);
+	    key: 'todoEditAction',
+	    value: function todoEditAction(todo) {
+	      console.log('edit action clicked!');
 	    }
 	  }, {
-	    key: 'updateTodo',
-	    value: function updateTodo(todo) {
-	      this.state.post('Update Todo', todo);
+	    key: 'todoDeleteAction',
+	    value: function todoDeleteAction(todo) {
+	      var todoData = {
+	        id: todo.id,
+	        title: todo.title,
+	        due_date: todo.dueDate,
+	        completed: !todo.completed
+	      };
+	      this.state.delete('Delete Todo', todoData);
 	    }
 	  }, {
-	    key: 'newTodo',
-	    value: function newTodo(todo) {
-	      this.state.post('New Todo', todo);
+	    key: 'panelSubmitAction',
+	    value: function panelSubmitAction(todo) {
+	      console.log('panel submit');
+	      console.log(todo);
 	    }
-	    // Todo Functions
-
 	  }]);
 
 	  return App;
@@ -288,32 +343,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getTodos = getTodos;
-	exports.updateTodo = updateTodo;
 	exports.dbDate = dbDate;
 	exports.viewDate = viewDate;
 	exports.dateCompair = dateCompair;
 	exports.colorDarken = colorDarken;
 	exports.pickColor = pickColor;
-	function getTodos() {
-	  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'all';
-	  var callback = arguments[1];
-
-	  fetch("?action=" + type).then(function (response) {
-	    return response.json();
-	  }).then(function (todos) {
-	    return callback(todos);
-	  });
-	}
-
-	function updateTodo(type, fields, callback) {
-	  fetch("?action=" + type + fields).then(function (response) {
-	    return response.json();
-	  }).then(function (todo) {
-	    return callback(todo);
-	  });
-	}
-
 	function dbDate(date) {
 	  var realDate = new Date(date);
 	  var year = realDate.getFullYear();
@@ -374,9 +408,6 @@
 
 	    _classCallCheck(this, State);
 
-	    this.todos = [];
-	    this.activeTodos = [];
-	    this.callback = null;
 	    this.ee = ee;
 	  }
 
@@ -866,8 +897,6 @@
 	      title.innerHTML = todo.title;
 	      title.className = 'todo-info__title';
 
-	      console.log(todo);
-
 	      if (todo.completed === false) {
 	        todo.primaryBTN = document.createElement('button');
 	        todo.primaryBTN.innerHTML = 'Done';
@@ -937,6 +966,7 @@
 	    this.newTodoBTN = document.querySelector('.js-new-todo');
 	    this.sectionEL = document.querySelector('.todo-panel');
 	    this.form = this.sectionEL.querySelector('.todo-panel-form');
+	    this.idInput = this.form.querySelector('[name=id]');
 	    this.submitBTN = this.form.querySelector('.js-submit');
 	    this.cancelBTN = this.form.querySelector('.js-cancel');
 	    this.dateGroup = this.form.querySelector('#todo-due-date');
@@ -986,6 +1016,7 @@
 	      var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Date();
 	      var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
+	      this.idInput.value = id;
 	      this.titleInput.value = title;
 	      this.currentEditId = id;
 	      this.editing = !!id;

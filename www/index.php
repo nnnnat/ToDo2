@@ -15,6 +15,6 @@
   if ($uri === '/') {
     require_once APP.'views.php';
   } else {
-    require_once APP.'routes.php';
+    require_once APP.'router.php';
   }
 ?>

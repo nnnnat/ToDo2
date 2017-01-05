@@ -3,14 +3,8 @@
   class TodoController
   {
 
-    // loading the app
-    public function index() {
-      $serviceLoaded = true;
-    }
-
     public function all() {
       $todo_list = Todo::all();
-
       echo json_encode($todo_list);
     }
 
@@ -38,6 +32,7 @@
       $title = $_POST['title'];
       $due_date = $_POST['due_date'];
       $completed = $_POST['completed'];
+      $completed = ($completed === 'true');
       $edited_todo = Todo::update_todo($id, $title, $due_date, $completed);
       $todo = Todo::get_todo($edited_todo);
 

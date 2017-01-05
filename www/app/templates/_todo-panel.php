@@ -1,6 +1,7 @@
 <section class="todo-panel" aria-hidden="true" >
 
   <form class="todo-panel-form" id="todo-panel-form" tabindex="-1" aria-label="Todo Form">
+    <input type="hidden" name="id" value="">
     <label for="todo-title">
       ToDo:
     </label>

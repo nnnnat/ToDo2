@@ -31,7 +31,7 @@ class App {
       this.sortList();
       this.panel.editing = false;
     });
-    this.state.on('Delete Todo', todo => this.removeTodo(todo, this.delay));
+    this.state.on('Delete Todo', todo => console.log(todo));//this.removeTodo(todo, this.delay));
 
   }
 
@@ -111,6 +111,7 @@ class App {
   }
 
   todoDelete(todo) {
+    console.log(todo);
     this.state.post('Delete Todo', todo);
   }
 
