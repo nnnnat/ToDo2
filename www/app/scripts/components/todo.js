@@ -1,4 +1,4 @@
-import { colorDarken, dateCompair } from './_helpers';
+import { colorDarken, dateCompair } from '../utils/helpers';;
 
 class Todo {
   constructor(data) {

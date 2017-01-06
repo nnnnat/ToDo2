@@ -1,7 +1,7 @@
-import { pickColor, colorDarken, dateCompair, dbDate } from './_helpers';
-import State from './_state';
-import Todo from './_todo';
-import Panel from './_panel';
+import { pickColor, colorDarken, dateCompair, dbDate } from '../utils/helpers';
+import State from '../utils/state';
+import Todo from './todo';
+import Panel from './panel';
 
 class App {
   constructor() {
@@ -148,7 +148,6 @@ class App {
   // action manegment
   // =====================
   todoPrimaryAction(todo) {
-    console.log(dbDate(todo.dueDate));
     const todoData = {
       id: todo.id,
       title: todo.title,

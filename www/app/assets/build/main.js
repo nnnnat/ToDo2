@@ -52,18 +52,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var ready = false;
-	document.onreadystatechange = function () {
-	  if (ready) {
-	    return;
-	  }
-	  // interactive = DOMContentLoaded & complete = window.load
-	  if (document.readyState === 'interactive' || document.readyState === 'complete') {
-	    ready = true;
-
-	    window.app = new _app2.default();
-	  }
-	};
+	new _app2.default();
 
 /***/ },
 /* 1 */
@@ -822,6 +811,8 @@
 	var _helpers = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	;
 
 	var Todo = function () {
 	  function Todo(data) {
