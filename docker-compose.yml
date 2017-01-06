@@ -1,0 +1,29 @@
+version: "2"
+services:
+  php:
+    image: nattkua/php
+    ports:
+      - "9000:80"
+    volumes:
+      - ./server/apache2/sites-enabled:/etc/apache2/sites-enabled
+      - ./server/php/etc-php/conf.d:/usr/local/etc/php/conf.d
+      - ./www:/var/www/html
+    links:
+      - mysql
+  mysql:
+    image: k0st/alpine-mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./server/data/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=todo2
+      - MYSQL_USER=nat
+      - MYSQL_PASSWORD=Att26-one-nola
+      - MYSQL_ROOT_PASSWORD=dbroopass
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    links:
+      - mysql:db
