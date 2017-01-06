@@ -3,7 +3,7 @@ services:
   php:
     image: nattkua/php
     ports:
-      - "9000:80"
+      - "80:80"
     volumes:
       - ./server/apache2/sites-enabled:/etc/apache2/sites-enabled
       - ./server/php/etc-php/conf.d:/usr/local/etc/php/conf.d

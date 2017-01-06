@@ -7,12 +7,10 @@ Todo2 is a task management app I've built to learn a few new skills
 
 ## Running Locally
 
-You'll need Docker and Docker-Compose installed.
-Run `docker-compose up` from the project root to spin up the enviorment.
+You'll need Docker and Docker-Compose installed run `docker-compose up` from the project root to spin up the enviorment.
 
 ### PHP & MYSQL
-You'll need to the todo's table using Sequal Pro or phpmyadmin to do this.
-
+You'll need to add the todo's table using Sequal Pro or phpmyadmin (running on localhost:8081) to do this.
 Run this query to create the todo's table
 ```
 CREATE TABLE todo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), due_date DATE, completed INT NOT NULL)
