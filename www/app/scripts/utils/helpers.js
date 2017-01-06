@@ -1,10 +1,13 @@
 export function dbDate(date) {
   const realDate = new Date(date);
   const year = realDate.getFullYear();
-  const dd = realDate.getDate();
-  const mm = realDate.getMonth();
+  let dd = realDate.getDate();
+  let mm = realDate.getMonth() + 1;
 
-  return `${mm}/${dd}/${year}`;
+  if(dd<10) dd='0'+dd;
+  if(mm<10) mm='0'+mm;
+
+  return `${year}-${mm}-${dd}`;
 }
 
 export function viewDate(date) {

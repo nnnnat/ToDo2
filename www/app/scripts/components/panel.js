@@ -1,4 +1,4 @@
-import { dbDate, dateCompair } from './_helpers';
+import { dbDate, dateCompair } from '../utils/helpers';
 
 class Panel {
   constructor() {

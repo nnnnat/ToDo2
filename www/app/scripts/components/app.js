@@ -1,7 +1,7 @@
-import { pickColor, colorDarken, dateCompair } from './_helpers';
-import State from './_state';
-import Todo from './_todo';
-import Panel from './_panel';
+import { pickColor, colorDarken, dateCompair, dbDate } from '../utils/helpers';
+import State from '../utils/state';
+import Todo from './todo';
+import Panel from './panel';
 
 class App {
   constructor() {
@@ -31,7 +31,10 @@ class App {
 
     // dom events
     this.toggleListBTN.addEventListener('click', this.toggleList.bind(this));
-    this.newTodoBTN.addEventListener('click', this.panel.open.bind(this.panel));
+    this.newTodoBTN.addEventListener('click', e => {
+      if (!this.displayUpcoming) this.toggleList();
+      this.panel.open();
+    });
 
     // calling in my data
     this.state.get();
@@ -109,8 +112,11 @@ class App {
   // updated todo
   updateTodo(todo) {
     let activeTodo = this.activeTodos.find(aT => aT.id == todo.id);
+    let dataTodo = this.todos.find(dT => dT.id == todo.id);
     activeTodo.title = todo.title;
     activeTodo.dueDate = todo.due_date;
+    dataTodo.title = todo.title;
+    dataTodo.dueDate = todo.due_date;
     activeTodo.refresh();
     this.sortList();
   }
@@ -145,7 +151,7 @@ class App {
     const todoData = {
       id: todo.id,
       title: todo.title,
-      due_date: todo.dueDate,
+      due_date: dbDate(todo.dueDate),
       completed: !todo.completed
     }
     this.state.post('Completed Todo', todoData);

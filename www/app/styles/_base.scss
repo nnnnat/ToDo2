@@ -68,20 +68,32 @@ table {
 // --------------------------------------------------------------------------------------------------------------------
 
 // defult font style
+html {
+  font-size: 13px;
+
+  @include breakPoint(sm) {
+    font-size: 20px;
+  }
+
+  @include breakPoint(lg) {
+    font-size: 24px;
+  }
+
+  @include breakPoint(xl) {
+    font-size: 28px;
+  }
+
+  @include breakPoint(xxl) {
+    font-size: 32px;
+  }
+}
+
 body {
   color: $typeColor;
   font-family: $type;
   font-size: 100%;
   font-weight: $copy;
   line-height: $scale;
-
-  @include breakPoint(sm) {
-    font-size: 110%;
-  }
-
-  @include breakPoint(lg) {
-    font-size: 120%;
-  }
 }
 
 // headlines
@@ -267,14 +279,16 @@ select {
 // body
 body {
   background-color: $background;
+  max-width: 60rem;
+  margin: auto;
   padding: 0 ms(0);
 
   @include breakPoint(sm) {
-    padding: 0 10%;
+    padding: 0 ms(2);
   }
 
   @include breakPoint(xl) {
-    padding: 0 20%;
+    padding: 0 ms(4);
   }
 
   &.lock {
