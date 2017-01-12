@@ -317,7 +317,6 @@
 	  }, {
 	    key: 'todoPrimaryAction',
 	    value: function todoPrimaryAction(todo) {
-	      console.log((0, _helpers.dbDate)(todo.dueDate));
 	      var todoData = {
 	        id: todo.id,
 	        title: todo.title,

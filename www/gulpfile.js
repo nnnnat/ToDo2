@@ -55,7 +55,7 @@ gulp.task('scripts', function() {
 
 gulp.task('browser-sync', function() {
   browserSync.init({
-    proxy: "localhost:9000"
+    proxy: "localhost"
   });
 });
 

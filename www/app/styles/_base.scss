@@ -72,19 +72,19 @@ html {
   font-size: 13px;
 
   @include breakPoint(sm) {
-    font-size: 20px;
+    font-size: 14px;
   }
 
   @include breakPoint(lg) {
-    font-size: 24px;
+    font-size: 16px;
   }
 
   @include breakPoint(xl) {
-    font-size: 28px;
+    font-size: 18px;
   }
 
   @include breakPoint(xxl) {
-    font-size: 32px;
+    font-size: 20px;
   }
 }
 

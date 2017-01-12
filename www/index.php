@@ -7,6 +7,7 @@
   define('TEMPLATES', './app/templates/'); // setting a tamplate path constant
   define('STYLES', './app/assets/build/main.css'); // setting a css file path constant
   define('SCRIPTS', './app/assets/build/main.js'); // setting a js file path constant
+  define('ASSETS', './app/assets/');
 
   require_once APP.'database.php'; // loading Database class
 
