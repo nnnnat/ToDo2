@@ -27,8 +27,8 @@ $colors: ('blue':$blue,'green':$green,'pink':$pink,'purple':$purple);
 
 /* type */
 // Inconsolata
-@import "https://fonts.googleapis.com/css?family=Inconsolata:400,700";
-$type: 'Inconsolata',Helvetica, Arial, sans-serif;
+//@import "https://fonts.googleapis.com/css?family=Inconsolata:400,700";
+$type: Helvetica, Arial, sans-serif;
 $copy: 400;
 $headline: 700;
 $lineWeight: 2px;
