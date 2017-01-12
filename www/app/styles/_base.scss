@@ -86,14 +86,14 @@ html {
   @include breakPoint(xxl) {
     font-size: 20px;
   }
-}
 
-body {
-  color: $typeColor;
-  font-family: $type;
-  font-size: 100%;
-  font-weight: $copy;
-  line-height: $scale;
+  body {
+    color: $typeColor;
+    font-family: $type;
+    font-size: 100%;
+    font-weight: $copy;
+    line-height: $scale;
+  }
 }
 
 // headlines
