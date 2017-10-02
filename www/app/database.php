@@ -11,7 +11,7 @@ class Database
   public static function getInstance() {
     if (!isset(self::$instance)) {
       $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-      self::$instance = new PDO('mysql:host=mysql;dbname=todo2', 'nat', 'Att26-one-nola', $pdo_options);
+      self::$instance = new PDO('mysql:host=mysql;dbname=todo2', 'nat', 'dbpass', $pdo_options);
     }
     return self::$instance;
   }

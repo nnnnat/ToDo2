@@ -19,7 +19,7 @@ services:
     environment:
       - MYSQL_DATABASE=todo2
       - MYSQL_USER=nat
-      - MYSQL_PASSWORD=Att26-one-nola
+      - MYSQL_PASSWORD=dbpass
       - MYSQL_ROOT_PASSWORD=dbroopass
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
